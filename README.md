@@ -1,7 +1,7 @@
 # investment-portfolio-gui
 GUI/Client of Investment Portfolio Application
 
-Main REST application - deployed on herok:
+Main REST application - deployed on heroku:
 
   - https://investment-portfolio-app.herokuapp.com/
   
