@@ -2,7 +2,6 @@ package com.invest.Gui.config;
 
 import org.apache.log4j.Logger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -37,7 +36,7 @@ public class ServiceConfig {
         } else {
             LOGGER.warn("File not found");
         }
-        return properties.getProperty("service.adress.url");
+        return properties.getProperty("service.address.url");
     }
 
 }

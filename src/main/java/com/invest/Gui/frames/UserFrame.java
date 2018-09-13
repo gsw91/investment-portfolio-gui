@@ -40,7 +40,7 @@ class UserFrame {
         configureOtherFrames();
         configureButtons();
 
-        UserTable userTable = new UserTable();
+        UserTable userTable = new UserTable(serverUrl);
         JTable table = userTable.showTable(userDto.getId());
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
@@ -66,9 +66,9 @@ class UserFrame {
 
         sellInstrumentFrame = new SellInstrumentFrame(userFrame, userDto, false, serverUrl);
 
-        statisticsFrame = new StatisticsFrame("Statistics", userDto.getId(), false);
+        statisticsFrame = new StatisticsFrame("Statistics", userDto.getId(), false, serverUrl);
 
-        quotationsFrame = new QuotationsFrame(false);
+        quotationsFrame = new QuotationsFrame(false, serverUrl);
     }
 
     private void configureButtons() {

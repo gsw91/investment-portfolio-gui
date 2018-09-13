@@ -18,6 +18,11 @@ public class StatisticsTable extends AbstractTableModel {
     private static Logger LOGGER = Logger.getLogger(StatisticsTable.class);
     private String[] columnNames = { "Name", "Buy", "Date", "Quantity", "Sell", "Date", "Result", "Rate [%]", "Duration [days]"};
     private Object[][] data;
+    private String serverUrl;
+
+    public StatisticsTable(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
 
     public JTable showTable(Long userId) {
         try {
@@ -47,7 +52,7 @@ public class StatisticsTable extends AbstractTableModel {
 
     private List<StatisticsData> connectToDatabase(Long userId) throws IOException {
         List<StatisticsData> stats = new ArrayList<>();
-        String request = "https://ancient-gorge-42887.herokuapp.com/v1/stats/show?userId=" + userId;
+        String request = serverUrl + "/v1/stats/show?userId=" + userId;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

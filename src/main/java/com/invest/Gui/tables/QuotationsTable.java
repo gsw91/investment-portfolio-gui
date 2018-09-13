@@ -17,6 +17,11 @@ public class QuotationsTable extends AbstractTableModel {
     private static Logger LOGGER = Logger.getLogger(QuotationsTable.class);
     private String[] columnNames = { "Index", "Current price", "Time"};
     private Object[][] data;
+    private String serverUrl;
+
+    public QuotationsTable(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
 
     public JTable showTable() {
         try {
@@ -40,7 +45,7 @@ public class QuotationsTable extends AbstractTableModel {
 
     private List<QuotationsData> connectToDatabase() throws IOException {
         List<QuotationsData> quotations = new ArrayList<>();
-        String request = "https://ancient-gorge-42887.herokuapp.com/v1/share/all";
+        String request = serverUrl + "/v1/share/all";
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

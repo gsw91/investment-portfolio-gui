@@ -11,7 +11,8 @@ public class ServiceConfigTestSuite {
     @Test
     public void testGetServiceUrl() {
         //given
-        String result = "https://ancient-gorge-42887.herokuapp.com";
+        //String result = "https://ancient-gorge-42887.herokuapp.com";
+        String result = "http://localhost:8080";
         ServiceConfig serviceConfig = new ServiceConfig();
         //when
         String property = serviceConfig.getServiceUrl();

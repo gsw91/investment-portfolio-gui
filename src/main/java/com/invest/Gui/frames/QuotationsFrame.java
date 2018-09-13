@@ -9,7 +9,10 @@ import java.awt.event.ActionListener;
 
 class QuotationsFrame extends JFrame {
 
-    protected QuotationsFrame(boolean visibility) throws HeadlessException {
+    private String serverUrl;
+
+    protected QuotationsFrame(boolean visibility, String serverUrl) throws HeadlessException {
+        this.serverUrl = serverUrl;
         this.createQuotationsFrame(visibility);
     }
 
@@ -22,7 +25,7 @@ class QuotationsFrame extends JFrame {
         this.setSize(800, 600);
         this.setLocation(300,200);
 
-        QuotationsTable quotationsTable = new QuotationsTable();
+        QuotationsTable quotationsTable = new QuotationsTable(serverUrl);
         JTable table = quotationsTable.showTable();
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);

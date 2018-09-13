@@ -9,8 +9,11 @@ import java.awt.event.ActionListener;
 
 class StatisticsFrame extends JFrame {
 
-    protected StatisticsFrame(String title, Long userId, boolean visibility) throws HeadlessException {
+    private String serverUrl;
+
+    protected StatisticsFrame(String title, Long userId, boolean visibility, String serverUrl) throws HeadlessException {
         super(title);
+        this.serverUrl = serverUrl;
         createStatisticsFrame(userId, visibility, this);
     }
 
@@ -18,7 +21,7 @@ class StatisticsFrame extends JFrame {
         statisticsFrame.setSize(800, 600);
         statisticsFrame.setLocation(300,200);
 
-        StatisticsTable statisticsTable = new StatisticsTable();
+        StatisticsTable statisticsTable = new StatisticsTable(serverUrl);
         JTable table = statisticsTable.showTable(userId);
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
