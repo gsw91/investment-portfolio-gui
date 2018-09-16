@@ -114,6 +114,8 @@ public class SignUpFrame extends JFrame {
 
             try {
                 sendCreateRequest(name, password, email);
+                new LogInFrame(serverUrl);
+                getSignUpFrame().dispose();
             } catch (IOException ex) {
                 LOGGER.warn("Connection refused");
             }

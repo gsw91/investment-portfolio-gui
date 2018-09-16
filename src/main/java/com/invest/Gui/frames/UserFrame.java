@@ -16,6 +16,7 @@ class UserFrame {
     private SellInstrumentFrame sellInstrumentFrame;
     private StatisticsFrame statisticsFrame;
     private QuotationsFrame quotationsFrame;
+    private SettingsFrame settingsFrame;
     private UserDto userDto;
     private JFrame userFrame;
     private JButton refreshButton;
@@ -24,6 +25,7 @@ class UserFrame {
     private JButton statsButton;
     private JButton quotationsButton;
     private JButton logOutButton;
+    private JButton settings;
     private String serverUrl;
 
     protected UserFrame(UserDto userDto, String serverUrl) {
@@ -34,8 +36,8 @@ class UserFrame {
     protected void openUserFrame() {
 
         userFrame = new JFrame("User panel");
-        userFrame.setSize(600,300);
-        userFrame.setLocation(500,300);
+        userFrame.setSize(800,600);
+        userFrame.setLocation(400,150);
 
         configureOtherFrames();
         configureButtons();
@@ -46,13 +48,14 @@ class UserFrame {
         table.setFillsViewportHeight(true);
 
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
-        buttonsPanel.add(new JLabel("Logged in as " + userDto.getLogin() + "   "));
+        buttonsPanel.setLayout(new GridLayout(1, 8));
+        buttonsPanel.add(new JLabel("  User: " + userDto.getLogin()));
         buttonsPanel.add(refreshButton);
         buttonsPanel.add(addButton);
         buttonsPanel.add(sellButton);
         buttonsPanel.add(statsButton);
         buttonsPanel.add(quotationsButton);
+        buttonsPanel.add(settings);
         buttonsPanel.add(logOutButton);
 
         userFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -69,6 +72,8 @@ class UserFrame {
         statisticsFrame = new StatisticsFrame("Statistics", userDto.getId(), false, serverUrl);
 
         quotationsFrame = new QuotationsFrame(false, serverUrl);
+
+        settingsFrame = new SettingsFrame(this, userDto, serverUrl);
     }
 
     private void configureButtons() {
@@ -88,9 +93,18 @@ class UserFrame {
         quotationsButton = new JButton("quotations");
         quotationsButton.addActionListener(new QuotationsButtonActionListener());
 
+        settings = new JButton("settings");
+        settings.addActionListener(new SettingActionListener());
+
         logOutButton = new JButton("log out");
         logOutButton.addActionListener(new LogOutButtonActionListener());
+    }
 
+    class SettingActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            settingsFrame.setVisible(true);
+        }
     }
 
     class QuotationsButtonActionListener implements ActionListener {
@@ -136,9 +150,17 @@ class UserFrame {
         public void actionPerformed(ActionEvent e) {
             new LogInFrame(serverUrl);
             LOGGER.info("User " + userDto.getLogin() + " logged out");
-            userFrame.dispose();
+            closeAllFrames();
         }
     }
 
+    public void closeAllFrames() {
+        userFrame.dispose();
+        settingsFrame.dispose();
+        addInstrumentFrame.dispose();
+        quotationsFrame.dispose();
+        statisticsFrame.dispose();
+        sellInstrumentFrame.dispose();
+    }
 
 }
