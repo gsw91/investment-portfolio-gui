@@ -57,7 +57,7 @@ public class SettingsFrame extends JFrame {
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new GridLayout(8, 1));
         labelPanel.add(new JLabel("Delete your account and your identities"));
-        //labelPanel.add(new JLabel("Reset your account (your instruments and statistics)"));
+        labelPanel.add(new JLabel("Reset your account (your instruments and statistics)"));
 
         this.getContentPane().add(BorderLayout.CENTER, labelPanel);
         this.getContentPane().add(BorderLayout.WEST, radioButtonsPanel);
@@ -67,7 +67,6 @@ public class SettingsFrame extends JFrame {
     private void configureRadioButtons() {
         resetAccount = new JRadioButton();
         resetAccount.addActionListener(new ResetAccountActionListener());
-        resetAccount.setVisible(false);
 
         removeAccount = new JRadioButton();
         removeAccount.addActionListener(new RemoveAccountActionListener());
@@ -118,7 +117,14 @@ public class SettingsFrame extends JFrame {
                     LOGGER.error(excep.getMessage());
                 }
             } else if (resetAccount.isSelected()) {
-                resetAccount();
+                try {
+                    resetInstruments();
+                    resetStatistics();
+                    new UserFrame(userDto, serverUrl).openUserFrame();
+                    userFrame.closeAllFrames();
+                } catch (IOException excep1) {
+                    LOGGER.error(excep1.getMessage());
+                }
             }
         }
 
@@ -141,7 +147,43 @@ public class SettingsFrame extends JFrame {
             }
         }
 
-        private void resetAccount() {}
+        private void resetInstruments() throws IOException {
+            String request = serverUrl + "/v1/instrument/reset?userId=" + userDto.getId();
+            URL url = new URL(request);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("DELETE");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String message = reader.readLine();
+            boolean isRemoved = Boolean.valueOf(message);
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == 200 && isRemoved) {
+                LOGGER.info("Instruments successfully removed");
+            } else {
+                LOGGER.warn("Instruments can not be remove, try later" + responseCode);
+            }
+        }
+
+        private void resetStatistics() throws IOException {
+            String request = serverUrl + "/v1/stats/reset?userId=" + userDto.getId();
+            URL url = new URL(request);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("DELETE");
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String message = reader.readLine();
+            boolean isRemoved = Boolean.valueOf(message);
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == 200 && isRemoved) {
+                LOGGER.info("Statistics successfully removed");
+            } else {
+                LOGGER.warn("Statistics can not be remove, try later" + responseCode);
+            }
+        }
 
     }
 
