@@ -1,6 +1,6 @@
 package com.invest.Gui.frames;
 
-import com.invest.Gui.config.ServiceConfig;
+import com.invest.Gui.connection.LogInUrlCreator;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.exception.LogInException;
 import org.apache.log4j.Logger;
@@ -11,12 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
 
 public class LogInFrame extends JFrame {
 
@@ -24,7 +18,13 @@ public class LogInFrame extends JFrame {
 
     private JTextField loginField;
     private JPasswordField passwordField;
+    private JTextField emailField;
     private String serverUrl;
+    private JRadioButton remindButton;
+    private JButton logIn;
+    private JPanel userPanel;
+    private JPanel remindingPanel;
+    private LogInUrlCreator logInUrlCreator = new LogInUrlCreator();
 
     public LogInFrame(String serverUrl) throws HeadlessException {
         this.serverUrl = serverUrl;
@@ -37,9 +37,9 @@ public class LogInFrame extends JFrame {
 
     private void createLoginFrame() {
         this.setTitle("Investing app log in");
-        this.setLocation(500,300);
+        this.setLocation(500, 300);
 
-        JButton logIn = new JButton(" click to log in");
+        logIn = new JButton("click to log in");
         logIn.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         logIn.addActionListener(new LogInActionListener());
 
@@ -47,17 +47,25 @@ public class LogInFrame extends JFrame {
         signUp.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         signUp.addActionListener(new SignUpActionListener());
 
+        remindButton = new JRadioButton("forgot your login / password");
+        remindButton.setFont(new Font(Font.SERIF, Font.PLAIN, 13));
+        remindButton.addActionListener(new ForgotActionListener());
+
         JButton exitButton = new JButton(" exit ");
         exitButton.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         exitButton.addActionListener(new ExitButtonActionListener());
 
         loginField = new JTextField();
         loginField.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
-        loginField.addMouseListener(new LoginAreaMouseListener());
+        loginField.addMouseListener(new TextAreaMouseListener());
 
         passwordField = new JPasswordField();
         passwordField.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
         passwordField.addMouseListener(new PasswordAreaMouseListener());
+
+        emailField = new JTextField();
+        emailField.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
+        emailField.addMouseListener(new TextAreaMouseListener());
 
         JLabel loginLabel = new JLabel("Enter the user name", SwingConstants.CENTER);
         loginLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
@@ -67,7 +75,11 @@ public class LogInFrame extends JFrame {
         passwordLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         passwordLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        JPanel userPanel = new JPanel();
+        JLabel emailLabel = new JLabel("Enter your email", SwingConstants.CENTER);
+        emailLabel.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        emailLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        userPanel = new JPanel();
         userPanel.setLayout(new GridLayout(2, 2));
         userPanel.add(loginLabel);
         userPanel.add(loginField);
@@ -79,13 +91,42 @@ public class LogInFrame extends JFrame {
         optionsPanel.add(signUp);
         optionsPanel.add(exitButton);
 
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new GridLayout(2, 1));
+        southPanel.add(logIn);
+        southPanel.add(remindButton);
+
+        remindingPanel = new JPanel();
+        remindingPanel.setLayout(new GridLayout(1, 2));
+        remindingPanel.add(emailLabel);
+        remindingPanel.add(emailField);
+
         this.getContentPane().add(BorderLayout.CENTER, userPanel);
-        this.getContentPane().add(BorderLayout.SOUTH, logIn);
+        this.getContentPane().add(BorderLayout.SOUTH, southPanel);
         this.getContentPane().add(BorderLayout.NORTH, optionsPanel);
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(400, 250);
         this.setVisible(true);
+    }
+
+    class ForgotActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (remindButton.isSelected()) {
+                logIn.setText("send email");
+                getFrame().getContentPane().remove(userPanel);
+                getFrame().getContentPane().add(BorderLayout.CENTER, remindingPanel);
+                getFrame().setSize(400, 200);
+                getFrame().repaint();
+            } else {
+                logIn.setText("click to log in");
+                getFrame().getContentPane().remove(remindingPanel);
+                getFrame().getContentPane().add(BorderLayout.CENTER, userPanel);
+                getFrame().setSize(400, 250);
+                getFrame().repaint();
+            }
+        }
     }
 
     class ExitButtonActionListener implements ActionListener {
@@ -107,81 +148,71 @@ public class LogInFrame extends JFrame {
     class LogInActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String login = loginField.getText();
-            char[] chars = passwordField.getPassword();
-            StringBuilder builder = new StringBuilder();
-            for(char i: chars) {
-                builder.append(i);
-            }
-            String password = builder.toString();
-            try {
-                sendLogRequest(login, password);
-                LOGGER.info("User " + login + " logged in ");
-            } catch (LogInException loginExce) {
-                LOGGER.warn("Wrong login or password");
-            } catch (IOException exce) {
-                LOGGER.error("Connection refused");
-            }
-        }
-
-        private void sendLogRequest(String login, String password) throws IOException, LogInException {
-            String request = serverUrl + "/v1/user/login?name=" + login + "&password=" + password;
-            URL url = new URL(request);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            int responseCode = connection.getResponseCode();
-            if (responseCode==200) {
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuffer response = new StringBuffer();
-                while ((inputLine = bufferedReader.readLine()) != null) {
-                    response.append(inputLine);
+            if (logIn.getText().equals("click to log in")) {
+                String login = loginField.getText();
+                char[] chars = passwordField.getPassword();
+                StringBuilder builder = new StringBuilder();
+                for (char i : chars) {
+                    builder.append(i);
                 }
-
-                String allResponse = response.toString();
-                allResponse = allResponse.replace("{", "");
-                allResponse = allResponse.replace("}", "");
-                String[] array = allResponse.split(",");
-
-                ArrayList<String> list = new ArrayList<>();
-
-                    for(String i: array) {
-                        String[] nextArray = i.split(":");
-                        if (nextArray.length ==2) {
-                            list.add(nextArray[1]);
-                        }
-                    }
-                    try {
-                        UserDto userDto = new UserDto(Long.valueOf(list.get(0)), list.get(1), list.get(2), list.get(3));
-                        UserFrame userFrame = new UserFrame(userDto, serverUrl);
-                        userFrame.openUserFrame();
-                        getFrame().dispose();
-                    } catch (NumberFormatException e) {
-                        throw new LogInException();
-                    }
-
-            } else {
-                LOGGER.warn("No user in database: " + login + " " + password);
+                String password = builder.toString();
+                boolean condition = sendLogRequest(login, password);
+                if (condition) {
+                    LOGGER.info("User " + login + " logged in ");
+                } else {
+                    LOGGER.warn("Wrong login or password");
+                }
+            } else if (logIn.getText().equals("send email")) {
+                String email = emailField.getText();
+                boolean emailCondition = sendRemindingEmail(email);
+                if (emailCondition) {
+                    LOGGER.info("Email with credentials was sent to: " + email);
+                    new LogInFrame(serverUrl);
+                    getFrame().dispose();
+                } else {
+                    LOGGER.warn("There is no such email id database: " + email);
+                }
             }
         }
     }
 
-    class LoginAreaMouseListener implements MouseListener {
+    private boolean sendRemindingEmail(String email) {
+        boolean emailCondition = email.contains("@") && email.contains(".");
+        if (emailCondition) {
+            emailCondition = logInUrlCreator.sendReminderEmail(email);
+        }
+        return emailCondition;
+    }
+
+    private boolean sendLogRequest(String login, String password) throws LogInException {
+        UserDto userDto = logInUrlCreator.createLoginRequest(login, password);
+        if (userDto.getId()!=null) {
+            UserFrame userFrame = new UserFrame(userDto, serverUrl);
+            userFrame.openUserFrame();
+            getFrame().dispose();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    class TextAreaMouseListener implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (loginField.getText().equals("login")) {
+            if (loginField.isCursorSet()) {
                 loginField.setText("");
+            }
+            if (emailField.isCursorSet()) {
+                emailField.setText("");
             }
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
-
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-
         }
 
         @Override
@@ -202,12 +233,10 @@ public class LogInFrame extends JFrame {
 
         @Override
         public void mousePressed(MouseEvent e) {
-
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-
         }
 
         @Override
@@ -219,7 +248,5 @@ public class LogInFrame extends JFrame {
         }
 
     }
-
-
 
 }
