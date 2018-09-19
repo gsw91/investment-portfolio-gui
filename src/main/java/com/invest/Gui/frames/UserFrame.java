@@ -9,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class UserFrame {
+public class UserFrame {
 
     private final static Logger LOGGER = Logger.getLogger(UserFrame.class);
     private AddInstrumentFrame addInstrumentFrame;
@@ -27,13 +27,16 @@ class UserFrame {
     private JButton logOutButton;
     private JButton settings;
     private String serverUrl;
+    private UserTable userTable;
+    private JTable table;
+    private JScrollPane scrollPane;
 
-    protected UserFrame(UserDto userDto, String serverUrl) {
+    public UserFrame(UserDto userDto, String serverUrl) {
         this.userDto = userDto;
         this.serverUrl = serverUrl;
     }
 
-    protected void openUserFrame() {
+    public void openUserFrame() {
 
         userFrame = new JFrame("User panel");
         userFrame.setSize(800,600);
@@ -42,9 +45,9 @@ class UserFrame {
         configureOtherFrames();
         configureButtons();
 
-        UserTable userTable = new UserTable(serverUrl);
-        JTable table = userTable.showTable(userDto.getId());
-        JScrollPane scrollPane = new JScrollPane(table);
+        userTable = new UserTable(serverUrl);
+        table = userTable.showTable(userDto.getId());
+        scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
         JPanel buttonsPanel = new JPanel();
@@ -141,7 +144,7 @@ class UserFrame {
             LOGGER.info("Refreshing shares panel");
             UserFrame newUserFrame = new UserFrame(userDto, serverUrl);
             newUserFrame.openUserFrame();
-            userFrame.dispose();
+            closeAllFrames();
         }
     }
 
