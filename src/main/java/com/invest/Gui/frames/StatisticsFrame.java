@@ -1,11 +1,10 @@
 package com.invest.Gui.frames;
 
+import com.invest.Gui.listener.common.CloseButtonActionListener;
 import com.invest.Gui.tables.StatisticsTable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 class StatisticsFrame extends JFrame {
 
@@ -27,19 +26,12 @@ class StatisticsFrame extends JFrame {
         table.setFillsViewportHeight(true);
 
         JButton close = new JButton("Close");
-        close.addActionListener(new CloseButtonActionListener());
+        close.addActionListener(new CloseButtonActionListener(this));
 
         statisticsFrame.getContentPane().add(scrollPane);
         statisticsFrame.getContentPane().add(BorderLayout.SOUTH, close);
 
         statisticsFrame.setVisible(visibility);
-    }
-
-    class CloseButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setVisible(false);
-        }
     }
 
 }
