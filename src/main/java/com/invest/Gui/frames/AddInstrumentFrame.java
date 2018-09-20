@@ -1,7 +1,7 @@
 package com.invest.Gui.frames;
 
 import com.invest.Gui.dto.UserDto;
-import com.invest.Gui.listener.addInstrument.ConfirmButtonActionListener;
+import com.invest.Gui.listener.addInstrument.BuyInstrumentActionListener;
 import com.invest.Gui.listener.common.CloseButtonActionListener;
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +9,6 @@ import java.awt.*;
 public class AddInstrumentFrame extends JFrame {
 
     private UserDto userDto;
-    private Boolean visibility;
     private UserFrame userFrame;
     private JTextField instrumentName;
     private JTextField quantity;
@@ -19,10 +18,9 @@ public class AddInstrumentFrame extends JFrame {
     private JButton confirmButton;
     private JButton cancelButton;
 
-    public AddInstrumentFrame(UserFrame userFrame, UserDto userDto, Boolean visibility, String serverUrl) {
+    public AddInstrumentFrame(UserFrame userFrame, UserDto userDto, String serverUrl) {
         this.userFrame = userFrame;
         this.userDto = userDto;
-        this.visibility = visibility;
         this.serverUrl = serverUrl;
         createAddingInstrumentFrame();
     }
@@ -57,6 +55,25 @@ public class AddInstrumentFrame extends JFrame {
 
     private void createAddingInstrumentFrame() {
         configureComponents();
+        installListenersInComponents();
+        configureFrame();
+    }
+
+    private void configureComponents() {
+        confirmButton = new JButton("Buy");
+        cancelButton = new JButton("Cancel");
+        instrumentName = new JTextField();
+        quantity = new JTextField();
+        price = new JTextField();
+        bought = new JTextField();
+    }
+
+    private void installListenersInComponents() {
+        confirmButton.addActionListener(new BuyInstrumentActionListener(this));
+        cancelButton.addActionListener(new CloseButtonActionListener(this));
+    }
+
+    private void configureFrame() {
         this.setTitle("Add instrument");
         this.setLocation(500,300);
         this.setSize(300,180);
@@ -71,18 +88,7 @@ public class AddInstrumentFrame extends JFrame {
         this.getContentPane().add(bought);
         this.getContentPane().add(confirmButton);
         this.getContentPane().add(cancelButton);
-        this.setVisible(visibility);
-    }
-
-    private void configureComponents() {
-        confirmButton = new JButton("Buy");
-        confirmButton.addActionListener(new ConfirmButtonActionListener(this));
-        cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new CloseButtonActionListener(this));
-        instrumentName = new JTextField();
-        quantity = new JTextField();
-        price = new JTextField();
-        bought = new JTextField();
+        this.setVisible(false);
     }
 
 }

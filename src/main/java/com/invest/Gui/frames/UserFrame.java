@@ -68,13 +68,13 @@ public class UserFrame {
     }
 
     private void configureOtherFrames() {
-        addInstrumentFrame = new AddInstrumentFrame(this, userDto, false, serverUrl);
+        addInstrumentFrame = new AddInstrumentFrame(this, userDto, serverUrl);
 
-        sellInstrumentFrame = new SellInstrumentFrame(userFrame, userDto, false, serverUrl);
+        sellInstrumentFrame = new SellInstrumentFrame(this, userDto, serverUrl);
 
-        statisticsFrame = new StatisticsFrame("Statistics", userDto.getId(), false, serverUrl);
+        statisticsFrame = new StatisticsFrame(userDto.getId(), serverUrl);
 
-        quotationsFrame = new QuotationsFrame(false, serverUrl);
+        quotationsFrame = new QuotationsFrame(serverUrl);
 
         settingsFrame = new SettingsFrame(this, userDto, serverUrl);
     }

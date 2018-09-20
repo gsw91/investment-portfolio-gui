@@ -1,49 +1,47 @@
 package com.invest.Gui.frames;
 
+import com.invest.Gui.listener.common.CloseButtonActionListener;
 import com.invest.Gui.tables.QuotationsTable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-class QuotationsFrame extends JFrame {
+public class QuotationsFrame extends JFrame {
 
     private String serverUrl;
+    private JScrollPane scrollPane;
+    private JButton close;
 
-    protected QuotationsFrame(boolean visibility, String serverUrl) throws HeadlessException {
+    public QuotationsFrame(String serverUrl) {
         this.serverUrl = serverUrl;
-        this.createQuotationsFrame(visibility);
+        createQuotationsFrame();
     }
 
-    private QuotationsFrame getFrame() {
-        return this;
+    private void createQuotationsFrame() {
+        configureComponents();
+        installListenersInComponents();
+        configureFrame();
     }
 
-    private void createQuotationsFrame(boolean visibility) {
+    private void configureComponents() {
+        QuotationsTable quotationsTable = new QuotationsTable(serverUrl);
+        JTable table = quotationsTable.showTable();
+        scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+        close = new JButton("Close");
+    }
+
+    private void installListenersInComponents() {
+        close.addActionListener(new CloseButtonActionListener(this, CloseButtonActionListener.CLOSE));
+    }
+
+    private void configureFrame() {
         this.setTitle("Current quotations");
         this.setSize(800, 600);
         this.setLocation(300,200);
-
-        QuotationsTable quotationsTable = new QuotationsTable(serverUrl);
-        JTable table = quotationsTable.showTable();
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-
-        JButton close = new JButton("Close");
-        close.addActionListener(new CloseButtonActionListener());
-
         this.getContentPane().add(scrollPane);
         this.getContentPane().add(BorderLayout.SOUTH, close);
-
-        this.setVisible(visibility);
-    }
-
-    class CloseButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            getFrame().dispose();
-        }
+        this.setVisible(false);
     }
 
 }

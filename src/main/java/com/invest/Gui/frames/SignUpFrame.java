@@ -21,7 +21,6 @@ public class SignUpFrame extends JFrame {
     private JPanel panel;
     private JPanel optionsPanel;
 
-
     public SignUpFrame(String serverUrl) throws HeadlessException {
         this.serverUrl = serverUrl;
         this.createFrame();
@@ -43,15 +42,7 @@ public class SignUpFrame extends JFrame {
         configureComponents();
         installListenersInComponents();
         configurePanels();
-
-        this.setTitle("Sign up");
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setLocation(500,300);
-        this.getContentPane().add(BorderLayout.CENTER, panel);
-        this.getContentPane().add(BorderLayout.SOUTH, signUp);
-        this.getContentPane().add(BorderLayout.NORTH, optionsPanel);
-        this.setSize(400,250);
-        this.setVisible(true);
+        configureFrame();
     }
 
     private void configureComponents() {
@@ -109,6 +100,17 @@ public class SignUpFrame extends JFrame {
         optionsPanel.setLayout(new GridLayout(1, 2));
         optionsPanel.add(logIn);
         optionsPanel.add(exitButton);
+    }
+
+    private void configureFrame() {
+        this.setTitle("Sign up");
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setLocation(500,300);
+        this.getContentPane().add(BorderLayout.CENTER, panel);
+        this.getContentPane().add(BorderLayout.SOUTH, signUp);
+        this.getContentPane().add(BorderLayout.NORTH, optionsPanel);
+        this.setSize(400,250);
+        this.setVisible(true);
     }
 
 }

@@ -1,60 +1,77 @@
 package com.invest.Gui.frames;
 
 import com.invest.Gui.dto.UserDto;
-import org.apache.log4j.Logger;
+import com.invest.Gui.listener.common.CloseButtonActionListener;
+import com.invest.Gui.listener.sellInstrument.SellInstrumentActionListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class SellInstrumentFrame extends JFrame {
 
-    private final static Logger LOGGER = Logger.getLogger(SellInstrumentFrame.class);
-    private JFrame userFrame;
+    private UserFrame userFrame;
+    private String serverUrl;
     private UserDto userDto;
-    private Boolean visibility;
     private JTextField instrumentName;
     private JTextField quantity;
     private JTextField price;
-    private String serverUrl;
+    private JButton confirmButton;
+    private JButton cancelButton;
 
-    protected SellInstrumentFrame(JFrame userFrame, UserDto userDto, Boolean visibility, String serverUrl) throws HeadlessException {
+    protected SellInstrumentFrame(UserFrame userFrame, UserDto userDto, String serverUrl) throws HeadlessException {
         this.userFrame = userFrame;
         this.userDto = userDto;
-        this.visibility = visibility;
         this.serverUrl = serverUrl;
-        openSellingWindow();
+        createSellWindow();
     }
 
-    private SellInstrumentFrame getFrame() {
-        return this;
+    public UserFrame getUserFrame() {
+        return userFrame;
     }
 
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
+    public UserDto getUserDto() {
+        return userDto;
     }
 
-    private void openSellingWindow() {
-        this.setTitle("Sell instrument");
-        this.setLocation(500,300);
-        this.setSize(300, 180);
+    public JTextField getInstrumentName() {
+        return instrumentName;
+    }
 
-        JButton confirmButton = new JButton("Sell");
-        confirmButton.addActionListener(new ConfirmButtonActionListener());
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new CancelButtonActionListener());
+    public JTextField getQuantity() {
+        return quantity;
+    }
 
+    public JTextField getPrice() {
+        return price;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    private void createSellWindow() {
+        configureComponents();
+        installListenersInComponents();
+        configureFrame();
+    }
+
+    private void configureComponents(){
+        confirmButton = new JButton("Sell");
+        cancelButton = new JButton("Cancel");
         instrumentName = new JTextField();
         quantity = new JTextField();
         price = new JTextField();
+    }
 
+    private void installListenersInComponents() {
+        confirmButton.addActionListener(new SellInstrumentActionListener(this));
+        cancelButton.addActionListener(new CloseButtonActionListener(this));
+    }
+
+    private void configureFrame() {
+        this.setTitle("Sell instrument");
+        this.setLocation(500,300);
+        this.setSize(300, 180);
         this.setLayout(new GridLayout(4, 2));
         this.add(new JLabel("Instrument"));
         this.add(instrumentName);
@@ -64,68 +81,7 @@ public class SellInstrumentFrame extends JFrame {
         this.add(price);
         this.add(confirmButton);
         this.add(cancelButton);
-        this.setVisible(visibility);
-    }
-
-    class ConfirmButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                Long userId = userDto.getId();
-                String name = instrumentName.getText().toUpperCase();
-                Long qtyToSell = convertToLong(quantity.getText());
-                Double sellingPrice = convertToDouble(price.getText());
-                boolean isSold = sellInstrument(userId, name, qtyToSell, sellingPrice);
-                if (isSold) {
-                    setVisible(false);
-                    UserFrame newUserFrame = new UserFrame(userDto, serverUrl);
-                    newUserFrame.openUserFrame();
-                    userFrame.dispose();
-                }
-            } catch (NumberFormatException exc) {
-                LOGGER.warn("Incorrect values inserted");
-            } catch (IOException exce) {
-                LOGGER.warn(exce.getMessage());
-            }
-        }
-
-        private Long convertToLong(String quantity) throws NumberFormatException {
-            return Long.valueOf(quantity);
-        }
-
-        private Double convertToDouble(String price) throws NumberFormatException {
-            price = price.replace(",", ".");
-            return Double.valueOf(price);
-        }
-
-        private boolean sellInstrument(Long userId, String name, Long quantity, Double sellingPrice) throws IOException {
-
-            String request = serverUrl + "/v1/instrument/sell?userId=" + userId + "&name=" + name + "&quantity=" + quantity + "&price=" + sellingPrice;
-            URL url = new URL(request);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("PUT");
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String message = reader.readLine();
-            boolean isSold = Boolean.valueOf(message);
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode == 200 && isSold) {
-                LOGGER.info("Instrument was sold, user " + userDto.getLogin() + ", instrument " + name + ", quantity/price " + quantity + "/" + sellingPrice);
-                return true;
-            } else {
-                LOGGER.warn("Selling instrument failed, response code " + responseCode);
-                return false;
-            }
-        }
-    }
-
-    class CancelButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            getFrame().setVisible(false);
-        }
+        this.setVisible(false);
     }
 
 }

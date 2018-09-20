@@ -9,29 +9,39 @@ import java.awt.*;
 class StatisticsFrame extends JFrame {
 
     private String serverUrl;
+    private JScrollPane scrollPane;
+    private JButton close;
 
-    protected StatisticsFrame(String title, Long userId, boolean visibility, String serverUrl) throws HeadlessException {
-        super(title);
+    protected StatisticsFrame(Long userId, String serverUrl) throws HeadlessException {
         this.serverUrl = serverUrl;
-        createStatisticsFrame(userId, visibility, this);
+        createStatisticsFrame(userId);
     }
 
-    private void createStatisticsFrame(Long userId, boolean visibility, StatisticsFrame statisticsFrame) {
-        statisticsFrame.setSize(800, 600);
-        statisticsFrame.setLocation(300,200);
+    private void createStatisticsFrame(Long userId) {
+        configureComponents(userId);
+        installListenersInComponents();
+        configureFrame();
+    }
 
+    private void configureComponents(Long userId) {
         StatisticsTable statisticsTable = new StatisticsTable(serverUrl);
         JTable table = statisticsTable.showTable(userId);
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
+        close = new JButton("Close");
+    }
 
-        JButton close = new JButton("Close");
+    private void installListenersInComponents() {
         close.addActionListener(new CloseButtonActionListener(this));
+    }
 
-        statisticsFrame.getContentPane().add(scrollPane);
-        statisticsFrame.getContentPane().add(BorderLayout.SOUTH, close);
-
-        statisticsFrame.setVisible(visibility);
+    private void configureFrame() {
+        this.setTitle("Statistics");
+        this.setSize(800, 600);
+        this.setLocation(300,200);
+        this.getContentPane().add(scrollPane);
+        this.getContentPane().add(BorderLayout.SOUTH, close);
+        this.setVisible(false);
     }
 
 }

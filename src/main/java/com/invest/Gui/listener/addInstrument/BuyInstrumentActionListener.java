@@ -13,12 +13,12 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-public class ConfirmButtonActionListener implements ActionListener {
+public class BuyInstrumentActionListener implements ActionListener {
 
-    private final static Logger LOGGER = Logger.getLogger(ConfirmButtonActionListener.class);
+    private final static Logger LOGGER = Logger.getLogger(BuyInstrumentActionListener.class);
     private AddInstrumentFrame frame;
 
-    public ConfirmButtonActionListener(AddInstrumentFrame frame) {
+    public BuyInstrumentActionListener(AddInstrumentFrame frame) {
         this.frame = frame;
     }
 
