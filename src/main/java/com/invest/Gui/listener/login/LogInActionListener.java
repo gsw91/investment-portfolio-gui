@@ -15,11 +15,9 @@ public class LogInActionListener implements ActionListener {
     private LogInUrlCreator logInUrlCreator = new LogInUrlCreator();
     private final static Logger LOGGER = Logger.getLogger(LogInActionListener.class);
     private LogInFrame logInFrame;
-    private String serverUrl;
 
-    public LogInActionListener(LogInFrame logInFrame, String serverUrl) {
+    public LogInActionListener(LogInFrame logInFrame) {
         this.logInFrame = logInFrame;
-        this.serverUrl = serverUrl;
     }
 
     @Override
@@ -49,7 +47,7 @@ public class LogInActionListener implements ActionListener {
             boolean emailCondition = sendRemindingEmail(email);
             if (emailCondition) {
                 LOGGER.info("Email with credentials was sent to: " + email);
-                new LogInFrame(serverUrl);
+                new LogInFrame();
                 logInFrame.dispose();
             } else {
                 LOGGER.warn("There is no such email id database: " + email);
@@ -68,7 +66,7 @@ public class LogInActionListener implements ActionListener {
     private boolean sendLogRequest(String login, String password) throws LogInException {
         UserDto userDto = logInUrlCreator.createLoginRequest(login, password);
         if (userDto.getId() != null) {
-            UserFrame userFrame = new UserFrame(userDto, serverUrl);
+            UserFrame userFrame = new UserFrame(userDto);
             userFrame.openUserFrame();
             logInFrame.dispose();
             return true;

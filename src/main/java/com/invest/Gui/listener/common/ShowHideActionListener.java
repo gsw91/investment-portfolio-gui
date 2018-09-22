@@ -4,18 +4,16 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class CloseButtonActionListener implements ActionListener {
+public class ShowHideActionListener implements ActionListener {
 
     public static int CLOSE = 0;
+    public static int VISIBLE = 1;
+    public static int INVISIBLE = 2;
 
     private JFrame frame;
     private int operation;
 
-    public CloseButtonActionListener(JFrame frame) {
-        this.frame = frame;
-    }
-
-    public CloseButtonActionListener(JFrame frame, int operation) {
+    public ShowHideActionListener(JFrame frame, int operation) {
         this.frame = frame;
         this.operation = operation;
     }
@@ -26,8 +24,12 @@ public class CloseButtonActionListener implements ActionListener {
             case 0:
                 frame.dispose();
                 break;
-            default:
+            case 1:
+                frame.setVisible(true);
+                break;
+            case 2:
                 frame.setVisible(false);
+                break;
         }
     }
 

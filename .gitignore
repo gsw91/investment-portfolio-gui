@@ -3,6 +3,7 @@ bash.exe.stackdump
 .idea
 build
 out
+META-INF/
 
 # Compiled class file
 *.class

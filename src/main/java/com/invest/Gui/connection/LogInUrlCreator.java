@@ -1,5 +1,6 @@
 package com.invest.Gui.connection;
 
+import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
 import org.apache.log4j.Logger;
 
@@ -10,16 +11,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class LogInUrlCreator {
+public class LogInUrlCreator implements BasicUrlCreator {
 
     private final static Logger LOGGER = Logger.getLogger(LogInUrlCreator.class);
-    private BasicUrlCreator basicUrlCreator = new BasicUrlCreator();
 
     public boolean sendReminderEmail(String email) {
-        String basicPath =  "/v1/user/checkMail?";
+        String basicPath = ServiceConfig.CHECK_MAIL;
         String[] params = {"mail"};
         String[] values = {email};
-        String urlPath = basicUrlCreator.generateGetUrl(basicPath, params, values);
+        String urlPath = generateUrlWithParams(basicPath, params, values);
         HttpURLConnection connection;
         try {
             URL url = new URL(urlPath);
@@ -42,10 +42,9 @@ public class LogInUrlCreator {
     }
 
     public UserDto createLoginRequest(String login, String password) {
-        String basicPath =  "/v1/user/login?";
         String[] params = {"name" , "password"};
         String[] values = {login, password};
-        String urlPath = basicUrlCreator.generateGetUrl(basicPath, params, values);
+        String urlPath = generateUrlWithParams(ServiceConfig.USER_LOGIN, params, values);
         HttpURLConnection connection;
         try {
             URL url = new URL(urlPath);

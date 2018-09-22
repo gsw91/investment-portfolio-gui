@@ -8,7 +8,6 @@ import java.awt.*;
 
 public class LogInFrame extends JFrame {
 
-    private String serverUrl;
     private JTextField loginField;
     private JTextField emailField;
     private JPasswordField passwordField;
@@ -24,13 +23,8 @@ public class LogInFrame extends JFrame {
     private JPanel optionsPanel;
     private JPanel southPanel;
 
-    public LogInFrame(String serverUrl) throws HeadlessException {
-        this.serverUrl = serverUrl;
+    public LogInFrame() throws HeadlessException {
         createFrame();
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
     }
 
     public JRadioButton getRemindButton() {
@@ -95,8 +89,8 @@ public class LogInFrame extends JFrame {
     }
 
     private void installListenersInComponents() {
-        logIn.addActionListener(new LogInActionListener(this, serverUrl));
-        signUp.addActionListener(new SwitchToSignUpActionListener(this, serverUrl));
+        logIn.addActionListener(new LogInActionListener(this));
+        signUp.addActionListener(new SwitchToSignUpActionListener(this));
         exitButton.addActionListener(new ExitButtonActionListener());
         remindButton.addActionListener(new ReminderActionListener(this));
         emailField.addMouseListener(new TextFieldMouseListener(emailField));

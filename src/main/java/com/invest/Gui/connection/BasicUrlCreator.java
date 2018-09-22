@@ -2,16 +2,14 @@ package com.invest.Gui.connection;
 
 import com.invest.Gui.config.ServiceConfig;
 
-public class BasicUrlCreator {
+interface BasicUrlCreator {
 
-    public String generateGetUrl(String basicPath, String[] params, String[] values) {
-
-        ServiceConfig serviceConfig = new ServiceConfig();
-        String serverUrl = serviceConfig.getServiceUrl();
-
+    default String generateUrlWithParams(String endpoint, String[] params, String[] values) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(serverUrl);
-        stringBuilder.append(basicPath);
+        stringBuilder.append(ServiceConfig.SERVER_URL);
+        stringBuilder.append(endpoint);
+        stringBuilder.append("?");
+
         if (params.length != values.length) {
             return "";
         } else {
@@ -26,4 +24,5 @@ public class BasicUrlCreator {
         }
         return stringBuilder.toString();
     }
+
 }

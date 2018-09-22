@@ -1,5 +1,6 @@
 package com.invest.Gui.listener.addInstrument;
 
+import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.frames.*;
 import org.apache.log4j.Logger;
@@ -25,7 +26,6 @@ public class BuyInstrumentActionListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-            String serverUrl = frame.getServerUrl();
             UserDto userDto = frame.getUserDto();
             String index = frame.getInstrumentName().getText().toUpperCase();
             Long qty = convertToLong(frame.getQuantity().getText());
@@ -33,8 +33,8 @@ public class BuyInstrumentActionListener implements ActionListener {
             LocalDate date = convertToLocalDate(frame.getBought().getText());
 
         try {
-            addingInstrument(serverUrl, userDto, index, qty, buyingPrice, date);
-            reloadFrame(userDto, serverUrl);
+            addingInstrument(userDto, index, qty, buyingPrice, date);
+            reloadFrame(userDto);
         } catch (DateTimeParseException dte) {
             LOGGER.warn("Incorrect data time inserted");
         } catch (NumberFormatException nfe) {
@@ -44,9 +44,9 @@ public class BuyInstrumentActionListener implements ActionListener {
         }
     }
 
-    private void reloadFrame(UserDto userDto, String serverUrl) {
+    private void reloadFrame(UserDto userDto) {
         frame.setVisible(false);
-        UserFrame newUserFrame = new UserFrame(userDto, serverUrl);
+        UserFrame newUserFrame = new UserFrame(userDto);
         newUserFrame.openUserFrame();
         frame.getUserFrame().closeAllFrames();
     }
@@ -64,9 +64,9 @@ public class BuyInstrumentActionListener implements ActionListener {
         return LocalDate.parse(date);
     }
 
-    private void addingInstrument(String serverUrl, UserDto userDto, String index, Long quantity, Double buyingPrice, LocalDate buyingDate) throws IOException {
+    private void addingInstrument(UserDto userDto, String index, Long quantity, Double buyingPrice, LocalDate buyingDate) throws IOException {
 
-        HttpURLConnection connection = createPostConnection(serverUrl);
+        HttpURLConnection connection = createPostConnection();
         JSONObject jsonObject = createJson(userDto, index, quantity, buyingPrice, buyingDate);
         sendJsonObject(connection, jsonObject);
 
@@ -77,8 +77,8 @@ public class BuyInstrumentActionListener implements ActionListener {
         }
     }
 
-    private HttpURLConnection createPostConnection(String serverUrl) throws IOException {
-        String request = serverUrl + "/v1/instrument/add";
+    private HttpURLConnection createPostConnection() throws IOException {
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.ADD_INSTRUMENT;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);

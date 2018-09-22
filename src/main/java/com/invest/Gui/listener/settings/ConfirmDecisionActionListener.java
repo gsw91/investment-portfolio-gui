@@ -1,5 +1,6 @@
 package com.invest.Gui.listener.settings;
 
+import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.frames.LogInFrame;
 import com.invest.Gui.frames.SettingsFrame;
@@ -7,6 +8,7 @@ import com.invest.Gui.frames.UserFrame;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.xml.ws.Service;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -20,13 +22,11 @@ public class ConfirmDecisionActionListener implements ActionListener {
     private final static Logger LOGGER = Logger.getLogger(ConfirmDecisionActionListener.class);
 
     private SettingsFrame settingsFrame;
-    private String serverUrl;
     private UserDto userDto;
     private UserFrame userFrame;
 
     public ConfirmDecisionActionListener(SettingsFrame settingsFrame) {
         this.settingsFrame = settingsFrame;
-        this.serverUrl = settingsFrame.getServerUrl();
         this.userDto = settingsFrame.getUserDto();
         this.userFrame = settingsFrame.getUserFrame();
     }
@@ -39,7 +39,7 @@ public class ConfirmDecisionActionListener implements ActionListener {
         if (removeAccount.isSelected()) {
             try {
                 deleteAccount();
-                new LogInFrame(serverUrl);
+                new LogInFrame();
                 userFrame.closeAllFrames();
             } catch (IOException excep) {
                 LOGGER.error(excep.getMessage());
@@ -48,7 +48,7 @@ public class ConfirmDecisionActionListener implements ActionListener {
             try {
                 resetInstruments();
                 resetStatistics();
-                new UserFrame(userDto, serverUrl).openUserFrame();
+                new UserFrame(userDto).openUserFrame();
                 userFrame.closeAllFrames();
             } catch (IOException excep1) {
                 LOGGER.error(excep1.getMessage());
@@ -57,7 +57,7 @@ public class ConfirmDecisionActionListener implements ActionListener {
     }
 
     private void deleteAccount() throws IOException {
-        String request = serverUrl + "/v1/user/delete?userId=" + userDto.getId();
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.USER_DELETE + "userId=" + userDto.getId();
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("DELETE");
@@ -76,7 +76,7 @@ public class ConfirmDecisionActionListener implements ActionListener {
     }
 
     private void resetInstruments() throws IOException {
-        String request = serverUrl + "/v1/instrument/reset?userId=" + userDto.getId();
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.INSTRUMENT_RESET + "userId=" + userDto.getId();
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("DELETE");
@@ -95,7 +95,7 @@ public class ConfirmDecisionActionListener implements ActionListener {
     }
 
     private void resetStatistics() throws IOException {
-        String request = serverUrl + "/v1/stats/reset?userId=" + userDto.getId();
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.STATS_RESET + "userId=" + userDto.getId();
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("DELETE");

@@ -8,17 +8,15 @@ import java.awt.event.ActionListener;
 
 public class SwitchToLogInActionListener implements ActionListener {
 
-    private String serverUrl;
     private SignUpFrame signUpFrame;
 
-    public SwitchToLogInActionListener(String serverUrl, SignUpFrame signUpFrame) {
-        this.serverUrl = serverUrl;
+    public SwitchToLogInActionListener(SignUpFrame signUpFrame) {
         this.signUpFrame = signUpFrame;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new LogInFrame(serverUrl);
+        new LogInFrame();
         signUpFrame.dispose();
     }
 }

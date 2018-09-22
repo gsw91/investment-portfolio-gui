@@ -1,5 +1,6 @@
 package com.invest.Gui.listener.sellInstrument;
 
+import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.frames.SellInstrumentFrame;
 import com.invest.Gui.frames.UserFrame;
@@ -25,9 +26,8 @@ public class SellInstrumentActionListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         UserDto userDto = sellInstrumentFrame.getUserDto();
-        Long userId = userDto.getId();
         String name = sellInstrumentFrame.getInstrumentName().getText().toUpperCase();
-        String serverUrl = sellInstrumentFrame.getServerUrl();
+        String serverUrl = ServiceConfig.SERVER_URL;
         UserFrame userFrame = sellInstrumentFrame.getUserFrame();
         try {
             Long qtyToSell = convertToLong(sellInstrumentFrame.getQuantity().getText());
@@ -35,7 +35,7 @@ public class SellInstrumentActionListener implements ActionListener {
             boolean isSold = sellInstrument(userDto, serverUrl, name, qtyToSell, sellingPrice);
             if (isSold) {
                 sellInstrumentFrame.setVisible(false);
-                UserFrame newUserFrame = new UserFrame(userDto, serverUrl);
+                UserFrame newUserFrame = new UserFrame(userDto);
                 newUserFrame.openUserFrame();
                 userFrame.closeAllFrames();
             }
@@ -57,7 +57,7 @@ public class SellInstrumentActionListener implements ActionListener {
 
     private boolean sellInstrument(UserDto userDto, String serverUrl, String name, Long quantity, Double sellingPrice) throws IOException {
 
-        String request = serverUrl + "/v1/instrument/sell?userId=" + userDto.getId() + "&name=" + name + "&quantity=" + quantity + "&price=" + sellingPrice;
+        String request = serverUrl + ServiceConfig.INSTRUMENT_SELL + "userId=" + userDto.getId() + "&name=" + name + "&quantity=" + quantity + "&price=" + sellingPrice;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("PUT");

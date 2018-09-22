@@ -1,5 +1,6 @@
 package com.invest.Gui.tables;
 
+import com.invest.Gui.config.ServiceConfig;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -17,11 +18,8 @@ public class QuotationsTable extends AbstractTableModel {
     private static Logger LOGGER = Logger.getLogger(QuotationsTable.class);
     private String[] columnNames = { "Index", "Current price", "Time"};
     private Object[][] data;
-    private String serverUrl;
 
-    public QuotationsTable(String serverUrl) {
-        this.serverUrl = serverUrl;
-    }
+    public QuotationsTable() {}
 
     public JTable showTable() {
         try {
@@ -45,7 +43,7 @@ public class QuotationsTable extends AbstractTableModel {
 
     private List<QuotationsData> connectToDatabase() throws IOException {
         List<QuotationsData> quotations = new ArrayList<>();
-        String request = serverUrl + "/v1/share/all";
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.SHARES_ALL;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

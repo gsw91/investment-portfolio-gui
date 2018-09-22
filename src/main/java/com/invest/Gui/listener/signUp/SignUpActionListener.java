@@ -1,5 +1,6 @@
 package com.invest.Gui.listener.signUp;
 
+import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.frames.LogInFrame;
 import com.invest.Gui.frames.SignUpFrame;
 import org.apache.log4j.Logger;
@@ -18,11 +19,9 @@ public class SignUpActionListener implements ActionListener {
 
     private final static Logger LOGGER = Logger.getLogger(SignUpFrame.class);
 
-    private String serverUrl;
     private SignUpFrame signUpFrame;
 
-    public SignUpActionListener(String serverUrl, SignUpFrame signUpFrame) {
-        this.serverUrl = serverUrl;
+    public SignUpActionListener(SignUpFrame signUpFrame) {
         this.signUpFrame = signUpFrame;
     }
 
@@ -35,7 +34,7 @@ public class SignUpActionListener implements ActionListener {
 
         try {
             sendCreateRequest(name, password, email);
-            new LogInFrame(serverUrl);
+            new LogInFrame();
             signUpFrame.dispose();
         } catch (IOException ex) {
             LOGGER.warn("Connection refused");
@@ -52,7 +51,7 @@ public class SignUpActionListener implements ActionListener {
     }
 
     private void sendCreateRequest(String login, String password, String email) throws IOException {
-        String request = serverUrl + "/v1/user/create";
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.USER_CREATE;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);

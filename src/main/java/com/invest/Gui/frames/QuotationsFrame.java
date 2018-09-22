@@ -1,19 +1,17 @@
 package com.invest.Gui.frames;
 
-import com.invest.Gui.listener.common.CloseButtonActionListener;
+import com.invest.Gui.listener.common.ShowHideActionListener;
 import com.invest.Gui.tables.QuotationsTable;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class QuotationsFrame extends JFrame {
+class QuotationsFrame extends JFrame {
 
-    private String serverUrl;
     private JScrollPane scrollPane;
     private JButton close;
 
-    public QuotationsFrame(String serverUrl) {
-        this.serverUrl = serverUrl;
+    protected QuotationsFrame() {
         createQuotationsFrame();
     }
 
@@ -24,7 +22,7 @@ public class QuotationsFrame extends JFrame {
     }
 
     private void configureComponents() {
-        QuotationsTable quotationsTable = new QuotationsTable(serverUrl);
+        QuotationsTable quotationsTable = new QuotationsTable();
         JTable table = quotationsTable.showTable();
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
@@ -32,7 +30,7 @@ public class QuotationsFrame extends JFrame {
     }
 
     private void installListenersInComponents() {
-        close.addActionListener(new CloseButtonActionListener(this, CloseButtonActionListener.CLOSE));
+        close.addActionListener(new ShowHideActionListener(this, ShowHideActionListener.CLOSE));
     }
 
     private void configureFrame() {

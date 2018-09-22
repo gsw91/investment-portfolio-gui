@@ -1,7 +1,7 @@
 package com.invest.Gui.frames;
 
 import com.invest.Gui.dto.UserDto;
-import com.invest.Gui.listener.common.CloseButtonActionListener;
+import com.invest.Gui.listener.common.ShowHideActionListener;
 import com.invest.Gui.listener.sellInstrument.SellInstrumentActionListener;
 
 import javax.swing.*;
@@ -10,7 +10,6 @@ import java.awt.*;
 public class SellInstrumentFrame extends JFrame {
 
     private UserFrame userFrame;
-    private String serverUrl;
     private UserDto userDto;
     private JTextField instrumentName;
     private JTextField quantity;
@@ -18,10 +17,9 @@ public class SellInstrumentFrame extends JFrame {
     private JButton confirmButton;
     private JButton cancelButton;
 
-    protected SellInstrumentFrame(UserFrame userFrame, UserDto userDto, String serverUrl) throws HeadlessException {
+    protected SellInstrumentFrame(UserFrame userFrame, UserDto userDto) throws HeadlessException {
         this.userFrame = userFrame;
         this.userDto = userDto;
-        this.serverUrl = serverUrl;
         createSellWindow();
     }
 
@@ -45,10 +43,6 @@ public class SellInstrumentFrame extends JFrame {
         return price;
     }
 
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
     private void createSellWindow() {
         configureComponents();
         installListenersInComponents();
@@ -65,7 +59,7 @@ public class SellInstrumentFrame extends JFrame {
 
     private void installListenersInComponents() {
         confirmButton.addActionListener(new SellInstrumentActionListener(this));
-        cancelButton.addActionListener(new CloseButtonActionListener(this));
+        cancelButton.addActionListener(new ShowHideActionListener(this, ShowHideActionListener.INVISIBLE));
     }
 
     private void configureFrame() {

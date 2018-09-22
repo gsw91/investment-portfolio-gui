@@ -1,5 +1,6 @@
 package com.invest.Gui.tables;
 
+import com.invest.Gui.config.ServiceConfig;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -18,11 +19,8 @@ public class StatisticsTable extends AbstractTableModel {
     private static Logger LOGGER = Logger.getLogger(StatisticsTable.class);
     private String[] columnNames = { "Name", "Buy", "Date", "Quantity", "Sell", "Date", "Result", "Rate [%]", "Duration [days]"};
     private Object[][] data;
-    private String serverUrl;
 
-    public StatisticsTable(String serverUrl) {
-        this.serverUrl = serverUrl;
-    }
+    public StatisticsTable() {}
 
     public JTable showTable(Long userId) {
         try {
@@ -52,7 +50,7 @@ public class StatisticsTable extends AbstractTableModel {
 
     private List<StatisticsData> connectToDatabase(Long userId) throws IOException {
         List<StatisticsData> stats = new ArrayList<>();
-        String request = serverUrl + "/v1/stats/show?userId=" + userId;
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.STATS_USER + "userId=" + userId;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");

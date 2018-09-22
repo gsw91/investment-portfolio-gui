@@ -2,7 +2,7 @@ package com.invest.Gui.frames;
 
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.listener.addInstrument.BuyInstrumentActionListener;
-import com.invest.Gui.listener.common.CloseButtonActionListener;
+import com.invest.Gui.listener.common.ShowHideActionListener;
 import javax.swing.*;
 import java.awt.*;
 
@@ -14,14 +14,12 @@ public class AddInstrumentFrame extends JFrame {
     private JTextField quantity;
     private JTextField price;
     private JTextField bought;
-    private String serverUrl;
     private JButton confirmButton;
     private JButton cancelButton;
 
-    public AddInstrumentFrame(UserFrame userFrame, UserDto userDto, String serverUrl) {
+    public AddInstrumentFrame(UserFrame userFrame, UserDto userDto) {
         this.userFrame = userFrame;
         this.userDto = userDto;
-        this.serverUrl = serverUrl;
         createAddingInstrumentFrame();
     }
 
@@ -49,10 +47,6 @@ public class AddInstrumentFrame extends JFrame {
         return bought;
     }
 
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
     private void createAddingInstrumentFrame() {
         configureComponents();
         installListenersInComponents();
@@ -70,7 +64,7 @@ public class AddInstrumentFrame extends JFrame {
 
     private void installListenersInComponents() {
         confirmButton.addActionListener(new BuyInstrumentActionListener(this));
-        cancelButton.addActionListener(new CloseButtonActionListener(this));
+        cancelButton.addActionListener(new ShowHideActionListener(this, ShowHideActionListener.INVISIBLE));
     }
 
     private void configureFrame() {

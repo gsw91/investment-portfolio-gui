@@ -1,6 +1,7 @@
 package com.invest.Gui.frames;
 
-import com.invest.Gui.listener.common.CloseButtonActionListener;
+import com.invest.Gui.dto.UserDto;
+import com.invest.Gui.listener.common.ShowHideActionListener;
 import com.invest.Gui.tables.StatisticsTable;
 
 import javax.swing.*;
@@ -8,13 +9,11 @@ import java.awt.*;
 
 class StatisticsFrame extends JFrame {
 
-    private String serverUrl;
     private JScrollPane scrollPane;
     private JButton close;
 
-    protected StatisticsFrame(Long userId, String serverUrl) throws HeadlessException {
-        this.serverUrl = serverUrl;
-        createStatisticsFrame(userId);
+    protected StatisticsFrame(UserDto userDto) throws HeadlessException {
+        createStatisticsFrame(userDto.getId());
     }
 
     private void createStatisticsFrame(Long userId) {
@@ -24,7 +23,7 @@ class StatisticsFrame extends JFrame {
     }
 
     private void configureComponents(Long userId) {
-        StatisticsTable statisticsTable = new StatisticsTable(serverUrl);
+        StatisticsTable statisticsTable = new StatisticsTable();
         JTable table = statisticsTable.showTable(userId);
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
@@ -32,7 +31,7 @@ class StatisticsFrame extends JFrame {
     }
 
     private void installListenersInComponents() {
-        close.addActionListener(new CloseButtonActionListener(this));
+        close.addActionListener(new ShowHideActionListener(this, ShowHideActionListener.INVISIBLE));
     }
 
     private void configureFrame() {

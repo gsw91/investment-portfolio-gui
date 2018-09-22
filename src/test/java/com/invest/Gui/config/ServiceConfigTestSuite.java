@@ -13,9 +13,9 @@ public class ServiceConfigTestSuite {
         //given
         String result = "https://investment-portfolio-app.herokuapp.com";
 //        String result = "http://localhost:8080";
-        ServiceConfig serviceConfig = new ServiceConfig();
+        new ServiceConfig();
         //when
-        String property = serviceConfig.getServiceUrl();
+        String property = ServiceConfig.SERVER_URL;
         //then
         Assert.assertEquals(result, property);
     }

@@ -1,5 +1,6 @@
 package com.invest.Gui.tables;
 
+import com.invest.Gui.config.ServiceConfig;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -18,11 +19,8 @@ public class UserTable extends AbstractTableModel {
     private static Logger LOGGER = Logger.getLogger(UserTable.class);
     private String[] columnNames = { "Name", "Quantity", "Buy", "Now", "Value", "Change", "Result"};
     private Object[][] data;
-    private String serverUrl;
 
-    public UserTable(String serverUrl) {
-        this.serverUrl = serverUrl;
-    }
+    public UserTable() {}
 
     public JTable showTable(Long userId) {
         try {
@@ -50,7 +48,7 @@ public class UserTable extends AbstractTableModel {
 
     private List<UserData> connectToDatabase(Long userId) throws IOException {
         List<UserData> userDataList = new ArrayList<>();
-        String request = serverUrl + "/v1/instrument/show?userId=" + userId;
+        String request = ServiceConfig.SERVER_URL + ServiceConfig.SHOW_USER_INSTRUMENT + userId;
         URL url = new URL(request);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
@@ -101,7 +99,7 @@ public class UserTable extends AbstractTableModel {
 
 
     private String getCurrentPrice(String indexList) throws IOException, ArrayIndexOutOfBoundsException {
-        String newRequest = serverUrl + "/v1/share/name?name=";
+        String newRequest = ServiceConfig.SERVER_URL + ServiceConfig.GET_SHARE;
             String mp = newRequest + indexList.replace("\"", "");
             URL newUrl = new URL(mp);
             HttpURLConnection newConnection = (HttpURLConnection) newUrl.openConnection();

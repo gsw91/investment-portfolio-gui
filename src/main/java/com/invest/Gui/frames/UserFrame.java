@@ -1,24 +1,23 @@
 package com.invest.Gui.frames;
 
+import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
+import com.invest.Gui.listener.common.ShowHideActionListener;
+import com.invest.Gui.listener.userFrame.LogOutActionListener;
+import com.invest.Gui.listener.userFrame.RefreshFrameActionListener;
 import com.invest.Gui.tables.UserTable;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class UserFrame {
+public class UserFrame extends JFrame {
 
-    private final static Logger LOGGER = Logger.getLogger(UserFrame.class);
     private AddInstrumentFrame addInstrumentFrame;
     private SellInstrumentFrame sellInstrumentFrame;
     private StatisticsFrame statisticsFrame;
     private QuotationsFrame quotationsFrame;
     private SettingsFrame settingsFrame;
     private UserDto userDto;
-    private JFrame userFrame;
     private JButton refreshButton;
     private JButton sellButton;
     private JButton addButton;
@@ -26,31 +25,41 @@ public class UserFrame {
     private JButton quotationsButton;
     private JButton logOutButton;
     private JButton settings;
-    private String serverUrl;
-    private UserTable userTable;
-    private JTable table;
     private JScrollPane scrollPane;
+    private JPanel buttonsPanel;
 
-    public UserFrame(UserDto userDto, String serverUrl) {
+    public UserFrame(UserDto userDto) {
         this.userDto = userDto;
-        this.serverUrl = serverUrl;
+    }
+
+    public UserDto getUserDto() {
+        return userDto;
     }
 
     public void openUserFrame() {
-
-        userFrame = new JFrame("User panel");
-        userFrame.setSize(800,600);
-        userFrame.setLocation(400,150);
-
+        configureComponents();
+        configurePanels();
         configureOtherFrames();
-        configureButtons();
+        installListenersInComponents();
+        configureFrame();
+    }
 
-        userTable = new UserTable(serverUrl);
-        table = userTable.showTable(userDto.getId());
+    private void configureComponents() {
+        refreshButton = new JButton("refresh");
+        addButton = new JButton("add");
+        sellButton = new JButton("sell");
+        statsButton = new JButton("stats");
+        quotationsButton = new JButton("quotations");
+        settings = new JButton("settings");
+        logOutButton = new JButton("log out");
+        UserTable userTable = new UserTable();
+        JTable table = userTable.showTable(userDto.getId());
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
+    }
 
-        JPanel buttonsPanel = new JPanel();
+    private void configurePanels() {
+        buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridLayout(1, 8));
         buttonsPanel.add(new JLabel("  User: " + userDto.getLogin()));
         buttonsPanel.add(refreshButton);
@@ -60,105 +69,38 @@ public class UserFrame {
         buttonsPanel.add(quotationsButton);
         buttonsPanel.add(settings);
         buttonsPanel.add(logOutButton);
-
-        userFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        userFrame.getContentPane().add(BorderLayout.CENTER, scrollPane);
-        userFrame.getContentPane().add(BorderLayout.SOUTH, buttonsPanel);
-        userFrame.setVisible(true);
     }
 
     private void configureOtherFrames() {
-        addInstrumentFrame = new AddInstrumentFrame(this, userDto, serverUrl);
-
-        sellInstrumentFrame = new SellInstrumentFrame(this, userDto, serverUrl);
-
-        statisticsFrame = new StatisticsFrame(userDto.getId(), serverUrl);
-
-        quotationsFrame = new QuotationsFrame(serverUrl);
-
-        settingsFrame = new SettingsFrame(this, userDto, serverUrl);
+        addInstrumentFrame = new AddInstrumentFrame(this, userDto);
+        sellInstrumentFrame = new SellInstrumentFrame(this, userDto);
+        statisticsFrame = new StatisticsFrame(userDto);
+        quotationsFrame = new QuotationsFrame();
+        settingsFrame = new SettingsFrame(this, userDto);
     }
 
-    private void configureButtons() {
-
-        refreshButton = new JButton("refresh");
-        refreshButton.addActionListener(new RefreshButtonActionListener());
-
-        addButton = new JButton("add");
-        addButton.addActionListener(new AddButtonActionListener());
-
-        sellButton = new JButton("sell");
-        sellButton.addActionListener(new SellButtonActionListener());
-
-        statsButton = new JButton("stats");
-        statsButton.addActionListener(new StatsButtonActionListener());
-
-        quotationsButton = new JButton("quotations");
-        quotationsButton.addActionListener(new QuotationsButtonActionListener());
-
-        settings = new JButton("settings");
-        settings.addActionListener(new SettingActionListener());
-
-        logOutButton = new JButton("log out");
-        logOutButton.addActionListener(new LogOutButtonActionListener());
+    private void installListenersInComponents() {
+        refreshButton.addActionListener(new RefreshFrameActionListener(this));
+        addButton.addActionListener(new ShowHideActionListener(addInstrumentFrame, ShowHideActionListener.VISIBLE));
+        sellButton.addActionListener(new ShowHideActionListener(sellInstrumentFrame, ShowHideActionListener.VISIBLE));
+        statsButton.addActionListener(new ShowHideActionListener(statisticsFrame, ShowHideActionListener.VISIBLE));
+        quotationsButton.addActionListener(new ShowHideActionListener(quotationsFrame, ShowHideActionListener.VISIBLE));
+        settings.addActionListener(new ShowHideActionListener(settingsFrame, ShowHideActionListener.VISIBLE));
+        logOutButton.addActionListener(new LogOutActionListener(this));
     }
 
-    class SettingActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            settingsFrame.setVisible(true);
-        }
-    }
-
-    class QuotationsButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            quotationsFrame.setVisible(true);
-        }
-    }
-
-    class StatsButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            statisticsFrame.setVisible(true);
-        }
-    }
-
-    class SellButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            sellInstrumentFrame.setVisible(true);
-        }
-    }
-
-    class AddButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            addInstrumentFrame.setVisible(true);
-        }
-    }
-
-    class RefreshButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            LOGGER.info("Refreshing shares panel");
-            UserFrame newUserFrame = new UserFrame(userDto, serverUrl);
-            newUserFrame.openUserFrame();
-            closeAllFrames();
-        }
-    }
-
-    class LogOutButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            new LogInFrame(serverUrl);
-            LOGGER.info("User " + userDto.getLogin() + " logged out");
-            closeAllFrames();
-        }
+    private void configureFrame() {
+        this.setTitle("User panel");
+        this.setSize(800,600);
+        this.setLocation(400,150);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.getContentPane().add(BorderLayout.CENTER, scrollPane);
+        this.getContentPane().add(BorderLayout.SOUTH, buttonsPanel);
+        this.setVisible(true);
     }
 
     public void closeAllFrames() {
-        userFrame.dispose();
+        this.dispose();
         settingsFrame.dispose();
         addInstrumentFrame.dispose();
         quotationsFrame.dispose();

@@ -1,7 +1,7 @@
 package com.invest.Gui.frames;
 
 import com.invest.Gui.dto.UserDto;
-import com.invest.Gui.listener.common.CloseButtonActionListener;
+import com.invest.Gui.listener.common.ShowHideActionListener;
 import com.invest.Gui.listener.settings.*;
 
 import javax.swing.*;
@@ -15,15 +15,13 @@ public class SettingsFrame extends JFrame {
     private JRadioButton removeAccount;
     private UserFrame userFrame;
     private UserDto userDto;
-    private String serverUrl;
     private JPanel radioButtonsPanel;
     private JPanel buttonsPanel;
     private JPanel labelPanel;
 
-    public SettingsFrame(UserFrame userFrame, UserDto userDto, String serverUrl) {
+    public SettingsFrame(UserFrame userFrame, UserDto userDto) {
         this.userFrame = userFrame;
         this.userDto = userDto;
-        this.serverUrl = serverUrl;
         createSettingFrame();
     }
 
@@ -37,10 +35,6 @@ public class SettingsFrame extends JFrame {
 
     public JRadioButton getRemoveAccount() {
         return removeAccount;
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
     }
 
     public UserFrame getUserFrame() {
@@ -70,7 +64,7 @@ public class SettingsFrame extends JFrame {
         removeAccount.addActionListener(new RemoveAccountActionListener(this));
         resetAccount.addActionListener(new ResetAccountActionListener(this));
         confirmButton.addActionListener(new ConfirmDecisionActionListener(this));
-        cancelButton.addActionListener(new CloseButtonActionListener(this));
+        cancelButton.addActionListener(new ShowHideActionListener(this, ShowHideActionListener.INVISIBLE));
     }
 
     private void configurePanels() {
