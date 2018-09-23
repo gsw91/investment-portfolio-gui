@@ -1,19 +1,16 @@
 package com.invest.Gui.tables;
 
 import com.invest.Gui.config.ServiceConfig;
+import com.invest.Gui.connection.RequestMethod;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuotationsTable extends AbstractTableModel {
+public class QuotationsTable extends AbstractTableModel implements TableGenerator {
 
     private static Logger LOGGER = Logger.getLogger(QuotationsTable.class);
     private String[] columnNames = { "Index", "Current price", "Time"};
@@ -21,14 +18,9 @@ public class QuotationsTable extends AbstractTableModel {
 
     public QuotationsTable() {}
 
-    public JTable showTable() {
-        try {
-            setData(connectToDatabase());
-            LOGGER.info("Quotations table has been created");
-        } catch (IOException e) {
-            LOGGER.error("Quotations table creation failed");
-            setData(new ArrayList<>());
-        }
+    @Override
+    public JTable createTable(Long userId) {
+        setData(connectToDatabase());
         return new JTable(data, columnNames);
     }
 
@@ -41,30 +33,36 @@ public class QuotationsTable extends AbstractTableModel {
         }
     }
 
-    private List<QuotationsData> connectToDatabase() throws IOException {
+    private List<QuotationsData> connectToDatabase() {
+        LOGGER.info("Creating quotations table for user");
+        String request = generateUrl(ServiceConfig.SHARES_ALL);
+        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
+        String[] array = getResponse(connection, "Quotations");
+        List<String> transformedResponseList = transformResponse(array);
+        return setGeneratedDate(transformedResponseList);
+    }
+
+    @Override
+    public List<QuotationsData> setGeneratedDate(List<String> transformedResponseList) {
         List<QuotationsData> quotations = new ArrayList<>();
-        String request = ServiceConfig.SERVER_URL + ServiceConfig.SHARES_ALL;
-        URL url = new URL(request);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-        if (responseCode==200) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                response.append(inputLine);
+        int modulo = transformedResponseList.size() % 4;
+        if (modulo == 0) {
+            int quantity = transformedResponseList.size();
+            for (int i = 0; i < quantity; i += 4) {
+                quotations.add(new QuotationsData(
+                        transformedResponseList.get(i),
+                        transformedResponseList.get(i + 1),
+                        transformedResponseList.get(i + 2)
+                ));
             }
+        }
+        return quotations;
+    }
 
-            String allResponse = response.toString();
-            allResponse = allResponse.replace("[", "");
-            allResponse = allResponse.replace("{", "");
-            allResponse = allResponse.replace("}", "");
-            allResponse = allResponse.replace("]", "");
-            allResponse = allResponse.replace("\"", "");
-            String[] array = allResponse.split(",");
-
-            ArrayList<String> list = new ArrayList<>();
+    @Override
+    public List<String> transformResponse(String[] array) {
+        List<String> list = new ArrayList<>();
+        if(array!=null) {
             for (String i : array) {
                 String[] nextArray = i.split(":");
                 if (nextArray.length == 3) {
@@ -72,31 +70,13 @@ public class QuotationsTable extends AbstractTableModel {
                 } else if (nextArray.length == 2) {
                     list.add(nextArray[1]);
                 } else if (nextArray.length == 4) {
-                    StringBuffer buffer = new StringBuffer();
-                    buffer.append(nextArray[1]);
-                    buffer.append(":");
-                    buffer.append(nextArray[2]);
-                    buffer.append(":");
-                    buffer.append(nextArray[3]);
-                    String datatime = buffer.toString().replace("T", " ");
-                    list.add(datatime);
-                }
-            }
-            LOGGER.info("Creating quotations table for user");
-
-            int modulo = list.size()%4;
-            if (modulo == 0) {
-                int quantity = list.size();
-                for(int i=0; i<quantity; i+=4) {
-                    quotations.add(new QuotationsData(
-                            list.get(i),
-                            list.get(i+1),
-                            list.get(i+2)
-                    ));
+                    String data = nextArray[1] + ":" + nextArray[2] + ":" + nextArray[3];
+                    data = data.replace("T", " ");
+                    list.add(data);
                 }
             }
         }
-        return quotations;
+        return list;
     }
 
     @Override

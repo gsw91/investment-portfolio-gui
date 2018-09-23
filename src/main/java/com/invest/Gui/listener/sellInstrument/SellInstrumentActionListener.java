@@ -40,7 +40,7 @@ public class SellInstrumentActionListener implements ActionListener {
                 userFrame.closeAllFrames();
             }
         } catch (NumberFormatException exc) {
-            LOGGER.warn("Incorrect values inserted");
+            LOGGER.warn("Incorrect setValues inserted");
         } catch (IOException exce) {
             LOGGER.warn(exce.getMessage());
         }

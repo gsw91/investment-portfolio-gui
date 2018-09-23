@@ -1,41 +1,34 @@
 package com.invest.Gui.tables;
 
 import com.invest.Gui.config.ServiceConfig;
+import com.invest.Gui.connection.RequestMethod;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserTable extends AbstractTableModel {
+public class UserTable extends AbstractTableModel implements TableGenerator {
 
     private static Logger LOGGER = Logger.getLogger(UserTable.class);
-    private String[] columnNames = { "Name", "Quantity", "Buy", "Now", "Value", "Change", "Result"};
+    private String[] columnNames = {"Name", "Quantity", "Buy", "Now", "Value", "Change", "Result"};
     private Object[][] data;
 
-    public UserTable() {}
+    public UserTable() {
+    }
 
-    public JTable showTable(Long userId) {
-        try {
-            setData(connectToDatabase(userId));
-            LOGGER.info("User table has been created");
-        } catch (IOException e) {
-            LOGGER.error("User table creation failed");
-            setData(new ArrayList<>());
-        }
+    @Override
+    public JTable createTable(Long userId) {
+        setData(connectToDatabase(userId));
         return new JTable(data, columnNames);
     }
 
     private void setData(List<UserData> userDataList) {
         data = new Object[userDataList.size()][7];
-        for (int i=0; i<userDataList.size(); i++) {
+        for (int i = 0; i < userDataList.size(); i++) {
             data[i][0] = userDataList.get(i).getName();
             data[i][1] = userDataList.get(i).getQuantity();
             data[i][2] = userDataList.get(i).getBuy();
@@ -46,28 +39,48 @@ public class UserTable extends AbstractTableModel {
         }
     }
 
-    private List<UserData> connectToDatabase(Long userId) throws IOException {
+    private List<UserData> connectToDatabase(Long userId) {
+        LOGGER.info("Creating table for user");
+        String[] params = setParams("userId");
+        String[] values = setValues(String.valueOf(userId));
+        String request = generateUrlWithParams(ServiceConfig.SHOW_USER_INSTRUMENT, params, values);
+        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
+        String[] array = getResponse(connection, "User");
+        List<String> transformedResponseList = transformResponse(array);
+        return setGeneratedDate(transformedResponseList);
+    }
+
+    private String getCurrentPrice(String indexList) {
+        String[] params = setParams("name");
+        String[] values = setValues(indexList);
+        String url = generateUrlWithParams(ServiceConfig.GET_SHARE, params, values);
+        HttpURLConnection connection = createConnection(url, RequestMethod.GET);
+        String[] array = getResponse(connection, "User");
+        array = array[1].split(":");
+        return array[1];
+    }
+
+    @Override
+    public List<UserData> setGeneratedDate(List<String> transformedResponseList) {
         List<UserData> userDataList = new ArrayList<>();
-        String request = ServiceConfig.SERVER_URL + ServiceConfig.SHOW_USER_INSTRUMENT + userId;
-        URL url = new URL(request);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-        if (responseCode==200) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                response.append(inputLine);
+        int modulo = transformedResponseList.size() % 6;
+        if (modulo == 0) {
+            int quantity = transformedResponseList.size();
+            for (int i = 0; i < quantity; i += 6) {
+                userDataList.add(new UserData(
+                        transformedResponseList.get(i + 3),
+                        Long.valueOf(transformedResponseList.get(i + 2)),
+                        BigDecimal.valueOf(Double.valueOf(transformedResponseList.get(i + 4))),
+                        BigDecimal.valueOf(Double.valueOf(getCurrentPrice(transformedResponseList.get(i + 3))))
+                ));
             }
+        }
+        return userDataList;
+    }
 
-            String allResponse = response.toString();
-            allResponse = allResponse.replace("[", "");
-            allResponse = allResponse.replace("{", "");
-            allResponse = allResponse.replace("}", "");
-            allResponse = allResponse.replace("]", "");
-            String[] array = allResponse.split(",");
-
+    @Override
+    public List<String> transformResponse(String[] array) {
+        if (array!=null) {
             ArrayList<String> list = new ArrayList<>();
             for (String i : array) {
                 String[] nextArray = i.split(":");
@@ -75,54 +88,10 @@ public class UserTable extends AbstractTableModel {
                     list.add(nextArray[1]);
                 }
             }
-            try {
-                LOGGER.info("Creating table for user");
-                //getPricesModulo
-                int modulo = list.size() % 6;
-                if (modulo == 0) {
-                    int quantity = list.size();
-                    for (int i = 0; i < quantity; i += 6) {
-                        userDataList.add(new UserData(
-                                list.get(i + 3),
-                                Long.valueOf(list.get(i + 2)),
-                                BigDecimal.valueOf(Double.valueOf(list.get(i + 4))),
-                                BigDecimal.valueOf(Double.valueOf(getCurrentPrice(list.get(i + 3))))
-                        ));
-                    }
-                }
-            } catch (ArrayIndexOutOfBoundsException e1) {
-                throw new IOException();
-            }
+            return list;
+        } else {
+            return new ArrayList<>();
         }
-        return userDataList;
-    }
-
-
-    private String getCurrentPrice(String indexList) throws IOException, ArrayIndexOutOfBoundsException {
-        String newRequest = ServiceConfig.SERVER_URL + ServiceConfig.GET_SHARE;
-            String mp = newRequest + indexList.replace("\"", "");
-            URL newUrl = new URL(mp);
-            HttpURLConnection newConnection = (HttpURLConnection) newUrl.openConnection();
-            newConnection.setRequestMethod("GET");
-            int newResponseCode = newConnection.getResponseCode();
-            if (newResponseCode == 200) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(newConnection.getInputStream()));
-                String newLine;
-                StringBuffer buffer = new StringBuffer();
-                while ((newLine = reader.readLine()) != null) {
-                    buffer.append(newLine);
-                }
-                String newResponse = buffer.toString();
-                newResponse = newResponse.replace("[", "");
-                newResponse = newResponse.replace("{", "");
-                newResponse = newResponse.replace("}", "");
-                newResponse = newResponse.replace("]", "");
-                String[] array = newResponse.split(",");
-
-                array = array[1].split(":");
-                return array[1];
-            }
-        return "";
     }
 
     @Override

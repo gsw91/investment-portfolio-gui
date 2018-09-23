@@ -38,7 +38,7 @@ public class BuyInstrumentActionListener implements ActionListener {
         } catch (DateTimeParseException dte) {
             LOGGER.warn("Incorrect data time inserted");
         } catch (NumberFormatException nfe) {
-            LOGGER.warn("Incorrect values inserted");
+            LOGGER.warn("Incorrect setValues inserted");
         } catch (IOException ioe) {
             LOGGER.error(ioe.getMessage());
         }

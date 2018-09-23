@@ -1,20 +1,18 @@
 package com.invest.Gui.tables;
 
 import com.invest.Gui.config.ServiceConfig;
+import com.invest.Gui.connection.RequestMethod;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StatisticsTable extends AbstractTableModel {
+public class StatisticsTable extends AbstractTableModel implements TableGenerator {
 
     private static Logger LOGGER = Logger.getLogger(StatisticsTable.class);
     private String[] columnNames = { "Name", "Buy", "Date", "Quantity", "Sell", "Date", "Result", "Rate [%]", "Duration [days]"};
@@ -22,14 +20,9 @@ public class StatisticsTable extends AbstractTableModel {
 
     public StatisticsTable() {}
 
-    public JTable showTable(Long userId) {
-        try {
-            setData(connectToDatabase(userId));
-            LOGGER.info("Statistics table has been created");
-        } catch (IOException e) {
-            LOGGER.error("Statistics table creation failed");
-            setData(new ArrayList<>());
-        }
+    @Override
+    public JTable createTable(Long userId) {
+        setData(connectToDatabase(userId));
         return new JTable(data, columnNames);
     }
 
@@ -48,58 +41,52 @@ public class StatisticsTable extends AbstractTableModel {
         }
     }
 
-    private List<StatisticsData> connectToDatabase(Long userId) throws IOException {
+    private List<StatisticsData> connectToDatabase(Long userId) {
+        LOGGER.info("Creating statistics table for user");
+        String[] params = setParams("userId");
+        String[] values = setValues(String.valueOf(userId));
+        String request = generateUrlWithParams(ServiceConfig.STATS_USER, params, values);
+        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
+        String[] array = getResponse(connection, "Statistics");
+        List<String> transformedResponseList = transformResponse(array);
+        return setGeneratedDate(transformedResponseList);
+    }
+
+    @Override
+    public List<StatisticsData> setGeneratedDate(List<String> transformedResponseList) {
         List<StatisticsData> stats = new ArrayList<>();
-        String request = ServiceConfig.SERVER_URL + ServiceConfig.STATS_USER + "userId=" + userId;
-        URL url = new URL(request);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        int responseCode = connection.getResponseCode();
-        if (responseCode==200) {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            while ((inputLine = bufferedReader.readLine()) != null) {
-                response.append(inputLine);
+        int modulo = transformedResponseList.size() % 11;
+        if (modulo == 0) {
+            int quantity = transformedResponseList.size();
+            for (int i = 0; i < quantity; i += 11) {
+                stats.add(new StatisticsData(
+                        transformedResponseList.get(i + 2),
+                        Double.valueOf(transformedResponseList.get(i + 3)),
+                        LocalDate.parse(transformedResponseList.get(i + 4)),
+                        Long.valueOf(transformedResponseList.get(i + 5)),
+                        Double.valueOf(transformedResponseList.get(i + 6)),
+                        LocalDate.parse(transformedResponseList.get(i + 7)),
+                        transformedResponseList.get(i + 8),
+                        Double.valueOf(transformedResponseList.get(i + 9)),
+                        Long.valueOf(transformedResponseList.get(i + 10))
+                ));
             }
+        }
+        return stats;
+    }
 
-            String allResponse = response.toString();
-            allResponse = allResponse.replace("[", "");
-            allResponse = allResponse.replace("{", "");
-            allResponse = allResponse.replace("}", "");
-            allResponse = allResponse.replace("]", "");
-            allResponse = allResponse.replace("\"", "");
-            String[] array = allResponse.split(",");
-
-            ArrayList<String> list = new ArrayList<>();
+    @Override
+    public List<String> transformResponse(String[] array) {
+        ArrayList<String> list = new ArrayList<>();
+        if(array!=null) {
             for (String i : array) {
                 String[] nextArray = i.split(":");
                 if (nextArray.length == 2) {
                     list.add(nextArray[1]);
                 }
             }
-            LOGGER.info("Creating statistics table for user");
-            //getPricesModulo
-            int modulo = list.size()%11;
-            if (modulo == 0) {
-                int quantity = list.size();
-                for(int i=0; i<quantity; i+=11) {
-                    stats.add(new StatisticsData(
-                            list.get(i+2),
-                            Double.valueOf(list.get(i+3)),
-                            LocalDate.parse(list.get(i+4)),
-                            Long.valueOf(list.get(i+5)),
-                            Double.valueOf(list.get(i+6)),
-                            LocalDate.parse(list.get(i+7)),
-                            list.get(i+8),
-                            Double.valueOf(list.get(i+9)),
-                            Long.valueOf(list.get(i+10))
-                    ));
-                }
-            }
         }
-
-        return stats;
+        return list;
     }
 
     @Override

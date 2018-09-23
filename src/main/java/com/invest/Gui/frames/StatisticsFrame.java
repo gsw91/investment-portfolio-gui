@@ -24,7 +24,7 @@ class StatisticsFrame extends JFrame {
 
     private void configureComponents(Long userId) {
         StatisticsTable statisticsTable = new StatisticsTable();
-        JTable table = statisticsTable.showTable(userId);
+        JTable table = statisticsTable.createTable(userId);
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         close = new JButton("Close");

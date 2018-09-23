@@ -23,7 +23,7 @@ class QuotationsFrame extends JFrame {
 
     private void configureComponents() {
         QuotationsTable quotationsTable = new QuotationsTable();
-        JTable table = quotationsTable.showTable();
+        JTable table = quotationsTable.createTable(0L);
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
         close = new JButton("Close");

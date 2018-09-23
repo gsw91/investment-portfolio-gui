@@ -1,6 +1,5 @@
 package com.invest.Gui.frames;
 
-import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.listener.common.ShowHideActionListener;
 import com.invest.Gui.listener.userFrame.LogOutActionListener;
@@ -53,7 +52,7 @@ public class UserFrame extends JFrame {
         settings = new JButton("settings");
         logOutButton = new JButton("log out");
         UserTable userTable = new UserTable();
-        JTable table = userTable.showTable(userDto.getId());
+        JTable table = userTable.createTable(userDto.getId());
         scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
     }
