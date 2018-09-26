@@ -3,7 +3,7 @@ package com.invest.Gui.tables;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class UserData {
+class UserData {
 
     private String name;
     private Long quantity;
@@ -13,7 +13,7 @@ public class UserData {
     private String change;
     private BigDecimal result;
 
-    public UserData(String name, Long quantity, BigDecimal buy, BigDecimal now) {
+    protected UserData(String name, Long quantity, BigDecimal buy, BigDecimal now) {
         this.name = name;
         this.quantity = quantity;
         this.buy = buy;
@@ -27,27 +27,27 @@ public class UserData {
         return name;
     }
 
-    public Long getQuantity() {
+    protected Long getQuantity() {
         return quantity;
     }
 
-    public BigDecimal getBuy() {
+    protected BigDecimal getBuy() {
         return buy;
     }
 
-    public BigDecimal getNow() {
+    protected BigDecimal getNow() {
         return now;
     }
 
-    public BigDecimal getValue() {
+    protected BigDecimal getValue() {
         return value;
     }
 
-    public String getChange() {
+    protected String getChange() {
         return change;
     }
 
-    public BigDecimal getResult() {
+    protected BigDecimal getResult() {
         return result;
     }
 }

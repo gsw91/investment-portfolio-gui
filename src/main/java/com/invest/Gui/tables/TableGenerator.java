@@ -1,6 +1,7 @@
 package com.invest.Gui.tables;
 
-import com.invest.Gui.connection.BasicUrlCreator;
+import com.invest.Gui.connection.RequestCreator;
+import com.invest.Gui.connection.RequestMethod;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -11,12 +12,31 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
-public interface TableGenerator extends BasicUrlCreator {
+public interface TableGenerator extends RequestCreator {
 
     Logger LOGGER = Logger.getLogger(TableGenerator.class);
     JTable createTable(Long userId);
-    List transformResponse(String[] array);
+    List<String> transformResponse(String[] array);
     List setGeneratedDate(List<String> transformedResponseList);
+
+    default List connectToDatabaseWithParams(String endpoint, String tableName, String[] params, String[] values) {
+        LOGGER.info("Creating " + tableName + " table");
+        String request = generateUrlWithParams(endpoint, params, values);
+        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
+        String[] array = getResponse(connection, tableName);
+        List<String> transformedResponseList = transformResponse(array);
+        return setGeneratedDate(transformedResponseList);
+    }
+
+
+    default List connectToDatabase(String endpoint, String tableName) {
+        LOGGER.info("Creating " + tableName + " table for user");
+        String request = generateUrl(endpoint);
+        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
+        String[] array = getResponse(connection, tableName);
+        List<String> transformedResponseList = transformResponse(array);
+        return setGeneratedDate(transformedResponseList);
+    }
 
     default HttpURLConnection createConnection(String url,String requestMethod)  {
         try {

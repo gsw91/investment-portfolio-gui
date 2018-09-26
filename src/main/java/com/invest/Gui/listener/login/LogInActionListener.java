@@ -1,6 +1,5 @@
 package com.invest.Gui.listener.login;
 
-import com.invest.Gui.connection.LogInUrlCreator;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.exception.LogInException;
 import com.invest.Gui.frames.*;
@@ -10,11 +9,14 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LogInActionListener implements ActionListener {
+public class LogInActionListener extends LogInRequestCreator implements ActionListener {
 
-    private LogInUrlCreator logInUrlCreator = new LogInUrlCreator();
     private final static Logger LOGGER = Logger.getLogger(LogInActionListener.class);
     private LogInFrame logInFrame;
+    private JButton logIn;
+    private JTextField loginField;
+    private JPasswordField passwordField;
+    private JTextField emailField;
 
     public LogInActionListener(LogInFrame logInFrame) {
         this.logInFrame = logInFrame;
@@ -23,48 +25,76 @@ public class LogInActionListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        JButton logIn = logInFrame.getLogIn();
-        JTextField loginField = logInFrame.getLoginField();
-        JPasswordField passwordField = logInFrame.getPasswordField();
-        JTextField emailField = logInFrame.getEmailField();
+        logIn = logInFrame.getLogIn();
+        loginField = logInFrame.getLoginField();
+        passwordField = logInFrame.getPasswordField();
+        emailField = logInFrame.getEmailField();
 
-        if (logIn.getText().equals("click to log in")) {
-            String login = loginField.getText();
-            char[] chars = passwordField.getPassword();
-            StringBuilder builder = new StringBuilder();
-            for (char i : chars) {
-                builder.append(i);
-            }
-            String password = builder.toString();
-            boolean condition = sendLogRequest(login, password);
-            if (condition) {
-                LOGGER.info("User " + login + " logged in ");
-            } else {
-                LOGGER.warn("Wrong login or password");
-            }
-        } else if (logIn.getText().equals("send email")) {
-            String email = emailField.getText();
-            boolean emailCondition = sendRemindingEmail(email);
-            if (emailCondition) {
-                LOGGER.info("Email with credentials was sent to: " + email);
-                new LogInFrame();
-                logInFrame.dispose();
-            } else {
-                LOGGER.warn("There is no such email id database: " + email);
-            }
+        if (checkText("click to log in")) {
+            tryLogIn();
+        } else if (checkText("send email")) {
+            trySendEmail();
         }
+    }
+
+    private boolean checkText(String text) {
+        return logIn.getText().equals(text);
+    }
+
+    private void tryLogIn() {
+        String login = getUserLogin();
+        boolean logInCondition = isSentLogRequest(login);
+        if (logInCondition) {
+            LOGGER.info("User " + login + " logged in ");
+        } else {
+            LOGGER.warn("Wrong login or password");
+        }
+    }
+
+    private void trySendEmail() {
+        String email = getUserEmail();
+        boolean emailCondition = sendRemindingEmail(email);
+        if (emailCondition) {
+            LOGGER.info("Email with credentials was sent to: " + email);
+            switchToLogInFrame();
+        } else {
+            LOGGER.warn("There is no such email id database: " + email);
+        }
+    }
+
+    private String getUserLogin() {
+        return loginField.getText();
+    }
+
+    private String getUserEmail() {
+        return emailField.getText();
+    }
+
+    private boolean isSentLogRequest(String login) {
+        char[] chars = passwordField.getPassword();
+        StringBuilder builder = new StringBuilder();
+        for (char i : chars) {
+            builder.append(i);
+        }
+        String password = builder.toString();
+        return sendLogRequest(login, password);
+    }
+
+    private void switchToLogInFrame() {
+        new LogInFrame();
+        logInFrame.dispose();
     }
 
     private boolean sendRemindingEmail(String email) {
         boolean emailCondition = email.contains("@") && email.contains(".");
         if (emailCondition) {
-            emailCondition = logInUrlCreator.sendReminderEmail(email);
+            emailCondition = sendReminderEmail(email);
         }
         return emailCondition;
     }
 
     private boolean sendLogRequest(String login, String password) throws LogInException {
-        UserDto userDto = logInUrlCreator.createLoginRequest(login, password);
+        UserDto userDto = createLoginRequest(login, password);
         if (userDto.getId() != null) {
             UserFrame userFrame = new UserFrame(userDto);
             userFrame.openUserFrame();

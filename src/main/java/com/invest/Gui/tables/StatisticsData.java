@@ -2,7 +2,7 @@ package com.invest.Gui.tables;
 
 import java.time.LocalDate;
 
-public class StatisticsData {
+class StatisticsData {
 
     private String index;
     private Double buyingPrice;
@@ -14,7 +14,7 @@ public class StatisticsData {
     private Double returnRate;
     private Long duration;
 
-    public StatisticsData(String index, Double buyingPrice, LocalDate buyingDate, Long quantity, Double sellingPrice, LocalDate sellingDate, String result, Double returnRate, Long duration) {
+    protected StatisticsData(String index, Double buyingPrice, LocalDate buyingDate, Long quantity, Double sellingPrice, LocalDate sellingDate, String result, Double returnRate, Long duration) {
         this.index = index;
         this.buyingPrice = buyingPrice;
         this.buyingDate = buyingDate;
@@ -26,39 +26,39 @@ public class StatisticsData {
         this.duration = duration;
     }
 
-    public String getIndex() {
+    protected String getIndex() {
         return index;
     }
 
-    public Double getBuyingPrice() {
+    protected Double getBuyingPrice() {
         return buyingPrice;
     }
 
-    public LocalDate getBuyingDate() {
+    protected LocalDate getBuyingDate() {
         return buyingDate;
     }
 
-    public Long getQuantity() {
+    protected Long getQuantity() {
         return quantity;
     }
 
-    public Double getSellingPrice() {
+    protected Double getSellingPrice() {
         return sellingPrice;
     }
 
-    public LocalDate getSellingDate() {
+    protected LocalDate getSellingDate() {
         return sellingDate;
     }
 
-    public String getResult() {
+    protected String getResult() {
         return result;
     }
 
-    public Double getReturnRate() {
+    protected Double getReturnRate() {
         return returnRate;
     }
 
-    public Long getDuration() {
+    protected Long getDuration() {
         return duration;
     }
 

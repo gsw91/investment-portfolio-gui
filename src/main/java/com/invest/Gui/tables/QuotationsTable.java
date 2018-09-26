@@ -1,22 +1,16 @@
 package com.invest.Gui.tables;
 
 import com.invest.Gui.config.ServiceConfig;
-import com.invest.Gui.connection.RequestMethod;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuotationsTable extends AbstractTableModel implements TableGenerator {
 
-    private static Logger LOGGER = Logger.getLogger(QuotationsTable.class);
     private String[] columnNames = { "Index", "Current price", "Time"};
     private Object[][] data;
-
-    public QuotationsTable() {}
 
     @Override
     public JTable createTable(Long userId) {
@@ -34,13 +28,13 @@ public class QuotationsTable extends AbstractTableModel implements TableGenerato
     }
 
     private List<QuotationsData> connectToDatabase() {
-        LOGGER.info("Creating quotations table for user");
-        String request = generateUrl(ServiceConfig.SHARES_ALL);
-        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
-        String[] array = getResponse(connection, "Quotations");
-        List<String> transformedResponseList = transformResponse(array);
-        return setGeneratedDate(transformedResponseList);
+        List list = connectToDatabase(ServiceConfig.SHARES_ALL, "quotations");
+        List<QuotationsData> quotationsDataList = new ArrayList<>();
+        for(Object o: list) {
+        quotationsDataList.add((QuotationsData)o);
     }
+        return quotationsDataList;
+}
 
     @Override
     public List<QuotationsData> setGeneratedDate(List<String> transformedResponseList) {

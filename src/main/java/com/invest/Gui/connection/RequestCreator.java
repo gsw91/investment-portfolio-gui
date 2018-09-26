@@ -2,7 +2,7 @@ package com.invest.Gui.connection;
 
 import com.invest.Gui.config.ServiceConfig;
 
-public interface BasicUrlCreator {
+public interface RequestCreator {
 
     default String generateUrlWithParams(String endpoint, String[] params, String[] values) {
         StringBuilder stringBuilder = new StringBuilder();

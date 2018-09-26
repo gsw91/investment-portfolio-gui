@@ -2,7 +2,6 @@ package com.invest.Gui.tables;
 
 import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.connection.RequestMethod;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -10,10 +9,10 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class UserTable extends AbstractTableModel implements TableGenerator {
 
-    private static Logger LOGGER = Logger.getLogger(UserTable.class);
     private String[] columnNames = {"Name", "Quantity", "Buy", "Now", "Value", "Change", "Result"};
     private Object[][] data;
 
@@ -40,14 +39,14 @@ public class UserTable extends AbstractTableModel implements TableGenerator {
     }
 
     private List<UserData> connectToDatabase(Long userId) {
-        LOGGER.info("Creating table for user");
         String[] params = setParams("userId");
         String[] values = setValues(String.valueOf(userId));
-        String request = generateUrlWithParams(ServiceConfig.SHOW_USER_INSTRUMENT, params, values);
-        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
-        String[] array = getResponse(connection, "User");
-        List<String> transformedResponseList = transformResponse(array);
-        return setGeneratedDate(transformedResponseList);
+        List list = connectToDatabaseWithParams(ServiceConfig.SHOW_USER_INSTRUMENT, "user", params, values);
+        List<UserData> userDataList = new ArrayList<>();
+        for(Object o: list) {
+            userDataList.add((UserData)o);
+        }
+        return userDataList;
     }
 
     private String getCurrentPrice(String indexList) {

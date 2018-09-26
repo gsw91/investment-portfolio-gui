@@ -1,24 +1,17 @@
 package com.invest.Gui.tables;
 
 import com.invest.Gui.config.ServiceConfig;
-import com.invest.Gui.connection.RequestMethod;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StatisticsTable extends AbstractTableModel implements TableGenerator {
 
-    private static Logger LOGGER = Logger.getLogger(StatisticsTable.class);
     private String[] columnNames = { "Name", "Buy", "Date", "Quantity", "Sell", "Date", "Result", "Rate [%]", "Duration [days]"};
     private Object[][] data;
-
-    public StatisticsTable() {}
 
     @Override
     public JTable createTable(Long userId) {
@@ -42,14 +35,14 @@ public class StatisticsTable extends AbstractTableModel implements TableGenerato
     }
 
     private List<StatisticsData> connectToDatabase(Long userId) {
-        LOGGER.info("Creating statistics table for user");
         String[] params = setParams("userId");
         String[] values = setValues(String.valueOf(userId));
-        String request = generateUrlWithParams(ServiceConfig.STATS_USER, params, values);
-        HttpURLConnection connection = createConnection(request, RequestMethod.GET);
-        String[] array = getResponse(connection, "Statistics");
-        List<String> transformedResponseList = transformResponse(array);
-        return setGeneratedDate(transformedResponseList);
+        List list = connectToDatabaseWithParams(ServiceConfig.STATS_USER, "statistics", params, values);
+        List<StatisticsData>statisticsDataList = new ArrayList<>();
+        for(Object o: list) {
+            statisticsDataList.add((StatisticsData)o);
+        }
+        return statisticsDataList;
     }
 
     @Override
