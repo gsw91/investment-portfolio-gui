@@ -28,7 +28,6 @@ public interface TableGenerator extends RequestCreator {
         return setGeneratedDate(transformedResponseList);
     }
 
-
     default List connectToDatabase(String endpoint, String tableName) {
         LOGGER.info("Creating " + tableName + " table for user");
         String request = generateUrl(endpoint);

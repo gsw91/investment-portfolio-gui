@@ -38,4 +38,13 @@ public interface PostRequestCreator extends RequestCreator {
         return json;
     }
 
+    default String removeSigns(String response) {
+        response = response.replace("[", "");
+        response = response.replace("{", "");
+        response = response.replace("}", "");
+        response = response.replace("]", "");
+        response = response.replace("\"", "");
+        return response;
+    }
+
 }
