@@ -32,7 +32,7 @@ class BuyInstrumentRequestCreator implements PostRequestCreator {
     }
 
     @Override
-    public void addInstrument(Long userId) {
+    public void sendPostRequest() {
         if(setValues()) {
             String[] keys = createKeys();
             Object[] values = createValues();

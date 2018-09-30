@@ -10,19 +10,23 @@ import java.awt.event.ActionListener;
 public class RefreshFrameActionListener implements ActionListener {
 
     private final static Logger LOGGER = Logger.getLogger(RefreshFrameActionListener.class);
-    private UserFrame userFrame;
+    private UserFrame frame;
 
-    public RefreshFrameActionListener(UserFrame userFrame) {
-        this.userFrame = userFrame;
+    public RefreshFrameActionListener(UserFrame frame) {
+        this.frame = frame;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        UserDto userDto = userFrame.getUserDto();
         LOGGER.info("Refreshing shares panel");
+        reloadFrame(frame.getUserDto());
+    }
+
+    private void reloadFrame(UserDto userDto) {
+        frame.setVisible(false);
         UserFrame newUserFrame = new UserFrame(userDto);
         newUserFrame.openUserFrame();
-        userFrame.closeAllFrames();
+        frame.closeAllFrames();
     }
 
 }

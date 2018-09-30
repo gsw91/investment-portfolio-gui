@@ -1,6 +1,5 @@
 package com.invest.Gui.listener.userFrame;
 
-import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.frames.LogInFrame;
 import com.invest.Gui.frames.UserFrame;

@@ -9,7 +9,7 @@ import java.net.URL;
 
 public interface PostRequestCreator extends RequestCreator {
 
-    void addInstrument(Long userId);
+    void sendPostRequest();
     String[] createKeys();
     Object[] createValues();
 

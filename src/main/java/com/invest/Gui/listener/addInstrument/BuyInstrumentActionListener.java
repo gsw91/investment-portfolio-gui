@@ -17,7 +17,7 @@ public class BuyInstrumentActionListener extends BuyInstrumentRequestCreator imp
     @Override
     public void actionPerformed(ActionEvent e) {
         UserDto userDto = frame.getUserDto();
-        addInstrument(userDto.getId());
+        sendPostRequest();
         if (BuyInstrumentRequestCreator.IS_INSTRUMENT_ADDED) {
             reloadFrame(userDto);
         }
