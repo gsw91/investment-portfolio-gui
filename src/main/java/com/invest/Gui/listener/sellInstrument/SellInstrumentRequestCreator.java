@@ -5,6 +5,7 @@ import com.invest.Gui.connection.PutRequestCreator;
 import com.invest.Gui.connection.RequestMethod;
 import com.invest.Gui.dto.UserDto;
 import com.invest.Gui.frames.SellInstrumentFrame;
+import com.invest.Gui.frames.WarningFrame;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -24,27 +25,43 @@ class SellInstrumentRequestCreator implements PutRequestCreator {
 
     @Override
     public boolean sellInstrument() {
-        setValues();
-        String[] params = createParams();
-        String[] values = createValues();
-        String request = generateUrlWithParams(ServiceConfig.INSTRUMENT_SELL, params, values);
-        try {
-            boolean isSold = getResponse(request, RequestMethod.PUT);
-            return checkIfIsSold(isSold, frame.getUserDto());
-        } catch (NumberFormatException exc) {
-            LOGGER.warn("Incorrect setValues inserted");
-            return false;
-        } catch (IOException ioe) {
-            LOGGER.warn(ioe.getMessage());
-            return false;
+        if (setValues()) {
+            String[] params = createParams();
+            String[] values = createValues();
+            String request = generateUrlWithParams(ServiceConfig.INSTRUMENT_SELL, params, values);
+            try {
+                boolean isSold = getResponse(request, RequestMethod.PUT);
+                return checkIfIsSold(isSold, frame.getUserDto());
+            } catch (NumberFormatException exc) {
+                LOGGER.warn("Incorrect setValues inserted");
+                WarningFrame.openWarningFrame("Incorrect setValues inserted");
+                return false;
+            } catch (IOException ioe) {
+                LOGGER.warn(ioe.getMessage());
+                return false;
+            }
         }
+        return false;
     }
 
-    private void setValues() {
+    private boolean setValues() {
         this.userId = String.valueOf(frame.getUserDto().getId());
         this.name = frame.getInstrumentName().getText().toUpperCase();
-        this.quantity = String.valueOf(convertToLong(frame.getQuantity().getText()));
-        this.sellingPrice = String.valueOf(convertToDouble(frame.getPrice().getText()));
+        try {
+            this.quantity = String.valueOf(convertToLong(frame.getQuantity().getText()));
+        } catch (NumberFormatException nfe) {
+            LOGGER.warn("Incorrect quantity inserted");
+            WarningFrame.openWarningFrame("Incorrect quantity inserted");
+            return false;
+        }
+        try {
+            this.sellingPrice = String.valueOf(convertToDouble(frame.getPrice().getText()));
+        } catch (NumberFormatException nfe) {
+            LOGGER.warn("Incorrect selling price inserted");
+            WarningFrame.openWarningFrame("Incorrect selling price inserted");
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -63,6 +80,7 @@ class SellInstrumentRequestCreator implements PutRequestCreator {
             return true;
         } else {
             LOGGER.warn("Selling instrument failed");
+            WarningFrame.openWarningFrame("Incorrect instrument to sell");
             return false;
         }
     }

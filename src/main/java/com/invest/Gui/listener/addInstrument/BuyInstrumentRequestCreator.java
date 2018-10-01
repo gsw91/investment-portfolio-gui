@@ -4,6 +4,7 @@ import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.connection.PostRequestCreator;
 import com.invest.Gui.connection.RequestMethod;
 import com.invest.Gui.frames.AddInstrumentFrame;
+import com.invest.Gui.frames.WarningFrame;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
@@ -48,10 +49,12 @@ class BuyInstrumentRequestCreator implements PostRequestCreator {
                     LOGGER.info("Instrument added for user " + userId);
                     IS_INSTRUMENT_ADDED = true;
                 } else {
-                    LOGGER.warn("Adding instrument failed");
+                    LOGGER.warn("Incorrect instrument");
+                    WarningFrame.openWarningFrame("Incorrect instrument");
                 }
             } catch (IOException ioe) {
                 LOGGER.warn("Adding instrument failed " + ioe.getMessage());
+                WarningFrame.openWarningFrame("Adding instrument failed");
             }
         }
     }
@@ -77,18 +80,21 @@ class BuyInstrumentRequestCreator implements PostRequestCreator {
             quantity = convertToLong(frame.getQuantity().getText());
         } catch (NumberFormatException nfe) {
             LOGGER.error("Incorrect quantity value");
+            WarningFrame.openWarningFrame("Incorrect quantity value");
             return false;
         }
         try {
             buyingPrice = convertToDouble(frame.getPrice().getText());
         } catch (NumberFormatException nfe) {
             LOGGER.error("Incorrect buying price value");
+            WarningFrame.openWarningFrame("Incorrect buying price value");
             return false;
         }
         try {
             buyingDate = convertToLocalDate(frame.getBought().getText());
         } catch (DateTimeParseException dtpe) {
-            LOGGER.error("Incorrect date");
+            LOGGER.error("Incorrect date format");
+            WarningFrame.openWarningFrame("Incorrect date format");
             return false;
         }
         return true;

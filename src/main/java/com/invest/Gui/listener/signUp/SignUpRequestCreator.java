@@ -4,6 +4,7 @@ import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.connection.PostRequestCreator;
 import com.invest.Gui.connection.RequestMethod;
 import com.invest.Gui.frames.SignUpFrame;
+import com.invest.Gui.frames.WarningFrame;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
@@ -12,24 +13,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 
-public class SignUpRequestCreator implements PostRequestCreator {
+class SignUpRequestCreator implements PostRequestCreator {
 
     private final static Logger LOGGER = Logger.getLogger(SignUpRequestCreator.class);
-
+    public static boolean isCreated = false;
     private SignUpFrame signUpFrame;
     private String login;
     private String password;
     private String email;
 
-    public SignUpRequestCreator(SignUpFrame signUpFrame) {
+    protected SignUpRequestCreator(SignUpFrame signUpFrame) {
         this.signUpFrame = signUpFrame;
     }
 
     @Override
     public void sendPostRequest()  {
-        this.login = signUpFrame.getLoginField().getText();
-        this.password = buildPassword(signUpFrame);
-        this.email = signUpFrame.getEmailField().getText();
+        login = signUpFrame.getLoginField().getText();
+        password = buildPassword(signUpFrame);
+        email = signUpFrame.getEmailField().getText();
 
         try {
             String request = generateUrl(ServiceConfig.USER_CREATE);
@@ -40,11 +41,15 @@ public class SignUpRequestCreator implements PostRequestCreator {
 
             if (allResponse.equals("User created")) {
                 LOGGER.info("User created");
+                isCreated = true;
             } else {
-                LOGGER.warn("User creation failed. " + allResponse);
+                LOGGER.warn("User creation failed." + allResponse);
+                isCreated = false;
+                WarningFrame.openWarningFrame(allResponse);
             }
         } catch (IOException ioe) {
             LOGGER.error("Connection refused");
+            WarningFrame.openWarningFrame("Connection refused");
         }
     }
 

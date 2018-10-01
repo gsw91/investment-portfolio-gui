@@ -4,6 +4,7 @@ import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.connection.GetRequestCreator;
 import com.invest.Gui.connection.RequestMethod;
 import com.invest.Gui.dto.UserDto;
+import com.invest.Gui.frames.WarningFrame;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ class LogInRequestCreator implements GetRequestCreator {
             response = removeSigns(response);
             return prepareUserToLog(response);
         } catch (IOException ioe) {
-            LOGGER.warn("No user in database: " + login + " " + password);
+            LOGGER.warn("No such user in database: " + login);
         }
         return new UserDto();
     }

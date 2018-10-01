@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class ConfirmDecisionRequestCreator implements DeleteRequestCreator {
+class ConfirmDecisionRequestCreator implements DeleteRequestCreator {
 
     private final static Logger LOGGER = Logger.getLogger(ConfirmDecisionRequestCreator.class);
     private final static String ACCOUNT = "Account";

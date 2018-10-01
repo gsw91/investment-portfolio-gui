@@ -16,9 +16,12 @@ public class SignUpActionListener extends SignUpRequestCreator implements Action
 
     @Override
     public void actionPerformed(ActionEvent e) {
-            sendPostRequest();
+        sendPostRequest();
+        if (isCreated) {
             new LogInFrame();
             signUpFrame.dispose();
+            isCreated = false;
+        }
     }
 
 }

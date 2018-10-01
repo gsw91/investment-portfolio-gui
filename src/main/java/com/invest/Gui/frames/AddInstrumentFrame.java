@@ -78,7 +78,7 @@ public class AddInstrumentFrame extends JFrame {
         this.getContentPane().add(quantity);
         this.getContentPane().add(new JLabel("Price"));
         this.getContentPane().add(price);
-        this.getContentPane().add(new JLabel("Bought YYYY-MM-DD"));
+        this.getContentPane().add(new JLabel("*Bought YYYY-MM-DD"));
         this.getContentPane().add(bought);
         this.getContentPane().add(confirmButton);
         this.getContentPane().add(cancelButton);

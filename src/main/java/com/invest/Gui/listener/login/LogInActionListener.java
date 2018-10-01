@@ -48,6 +48,7 @@ public class LogInActionListener extends LogInRequestCreator implements ActionLi
             LOGGER.info("User " + login + " logged in ");
         } else {
             LOGGER.warn("Wrong login or password");
+            WarningFrame.openWarningFrame("Wrong login or password");
         }
     }
 
@@ -59,6 +60,7 @@ public class LogInActionListener extends LogInRequestCreator implements ActionLi
             switchToLogInFrame();
         } else {
             LOGGER.warn("There is no such email id database: " + email);
+            WarningFrame.openWarningFrame("There is no such email id database: " + email);
         }
     }
 

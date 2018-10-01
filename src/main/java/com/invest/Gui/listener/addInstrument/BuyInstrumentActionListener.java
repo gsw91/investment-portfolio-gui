@@ -20,6 +20,7 @@ public class BuyInstrumentActionListener extends BuyInstrumentRequestCreator imp
         sendPostRequest();
         if (BuyInstrumentRequestCreator.IS_INSTRUMENT_ADDED) {
             reloadFrame(userDto);
+            BuyInstrumentRequestCreator.IS_INSTRUMENT_ADDED = false;
         }
     }
 
