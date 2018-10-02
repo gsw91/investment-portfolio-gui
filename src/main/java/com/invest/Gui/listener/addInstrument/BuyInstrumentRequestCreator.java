@@ -117,7 +117,7 @@ class BuyInstrumentRequestCreator implements PostRequestCreator {
     }
 
     private HttpURLConnection createPostConnection() throws IOException {
-        String request = generateUrl(ServiceConfig.ADD_INSTRUMENT);
+        String request = generateUrl(ServiceConfig.INSTRUMENT_ADD);
         return createPostConnection(request, RequestMethod.POST);
     }
 

@@ -19,7 +19,7 @@ public class SellInstrumentActionListener extends SellInstrumentRequestCreator i
     @Override
     public void actionPerformed(ActionEvent e) {
         UserDto userDto = frame.getUserDto();
-        boolean isSold = sellInstrument();
+        boolean isSold = createPutRequest();
         if (isSold) {
             reloadFrame(userDto);
         }

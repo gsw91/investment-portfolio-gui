@@ -24,7 +24,7 @@ class SellInstrumentRequestCreator implements PutRequestCreator {
     }
 
     @Override
-    public boolean sellInstrument() {
+    public boolean createPutRequest() {
         if (setValues()) {
             String[] params = createParams();
             String[] values = createValues();

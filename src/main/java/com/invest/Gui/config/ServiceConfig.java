@@ -13,18 +13,21 @@ public final class ServiceConfig {
     private static File applicationProperties = new File("application.properties");
 
     public final static String SERVER_URL = getPropertyValue(applicationProperties, "server.address.url");
-    public final static String ADD_INSTRUMENT = getPropertyValue(applicationProperties, "endpoint.instrument.add");
-    public final static String SHOW_USER_INSTRUMENT = getPropertyValue(applicationProperties, "endpoint.instrument.show");
-    public final static String GET_SHARE = getPropertyValue(applicationProperties, "endpoint.share.name");
-    public final static String CHECK_MAIL = getPropertyValue(applicationProperties, "endpoint.user.check.mail");
+    public final static String INSTRUMENT_ADD = getPropertyValue(applicationProperties, "endpoint.instrument.add");
+    public final static String INSTRUMENT_SHOW_ALL = getPropertyValue(applicationProperties, "endpoint.instrument.show");
     public final static String INSTRUMENT_SELL = getPropertyValue(applicationProperties, "endpoint.instrument.sell");
-    public final static String SHARES_ALL = getPropertyValue(applicationProperties, "endpoint.share.all");
-    public final static String USER_CREATE = getPropertyValue(applicationProperties, "endpoint.user.create");
-    public final static String STATS_USER = getPropertyValue(applicationProperties, "endpoint.stats.user");
-    public final static String USER_DELETE = getPropertyValue(applicationProperties, "endpoint.user.delete");
     public final static String INSTRUMENT_RESET = getPropertyValue(applicationProperties, "endpoint.instrument.reset");
-    public final static String STATS_RESET = getPropertyValue(applicationProperties, "endpoint.stats.reset");
+    public final static String SHARES_GET_ONE = getPropertyValue(applicationProperties, "endpoint.share.name");
+    public final static String SHARES_ALL = getPropertyValue(applicationProperties, "endpoint.share.all");
+    public final static String USER_CHECK_MAIL = getPropertyValue(applicationProperties, "endpoint.user.check.mail");
+    public final static String USER_CREATE = getPropertyValue(applicationProperties, "endpoint.user.create");
+    public final static String USER_DELETE = getPropertyValue(applicationProperties, "endpoint.user.delete");
     public final static String USER_LOGIN = getPropertyValue(applicationProperties, "endpoint.user.login");
+    public final static String USER_UPDATE_LOGIN = getPropertyValue(applicationProperties, "endpoint.user.update.login");
+    public final static String USER_UPDATE_PASSWORD = getPropertyValue(applicationProperties, "endpoint.user.update.password");
+    public final static String USER_UPDATE_MAIL = getPropertyValue(applicationProperties, "endpoint.user.update.mail");
+    public final static String STATS_USER = getPropertyValue(applicationProperties, "endpoint.stats.user");
+    public final static String STATS_RESET = getPropertyValue(applicationProperties, "endpoint.stats.reset");
 
     private static String getPropertyValue(File file, String property) {
 

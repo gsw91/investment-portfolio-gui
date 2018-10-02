@@ -1,9 +1,8 @@
 package com.invest.Gui.listener.settings;
 
 import com.invest.Gui.dto.UserDto;
-import com.invest.Gui.frames.LogInFrame;
-import com.invest.Gui.frames.SettingsFrame;
-import com.invest.Gui.frames.UserFrame;
+import com.invest.Gui.exception.DifferentWordsException;
+import com.invest.Gui.frames.*;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
@@ -28,13 +27,22 @@ public class ConfirmDecisionActionListener extends ConfirmDecisionRequestCreator
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JRadioButton removeAccount = frame.getRemoveAccount();
-        JRadioButton resetAccount = frame.getResetAccount();
+        JRadioButton removeAccount = frame.getRemoveAccountButton();
+        JRadioButton resetAccount = frame.getResetAccountButton();
+        JRadioButton changeLogin = frame.getChangeLoginButton();
+        JRadioButton changePassword = frame.getChangePasswordButton();
+        JRadioButton changeMail = frame.getChangeEmailButton();
 
         if (removeAccount.isSelected()) {
             tryDeleteAccount();
         } else if (resetAccount.isSelected()) {
             tryResetAccount();
+        } else if (changeLogin.isSelected()) {
+            new ChangingFrame(userDto.getId(),"login", userDto.getLogin());
+        } else if (changePassword.isSelected()) {
+            new ChangingFrame(userDto.getId(),"password", userDto.getPassword());
+        } else if (changeMail.isSelected()) {
+            new ChangingFrame(userDto.getId(),"email", userDto.getEmail());
         }
     }
 

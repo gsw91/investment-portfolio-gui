@@ -8,7 +8,7 @@ import java.net.URL;
 
 public interface PutRequestCreator extends RequestCreator {
 
-    boolean sellInstrument();
+    boolean createPutRequest();
     String[] createParams();
     String[] createValues();
 

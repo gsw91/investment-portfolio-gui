@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class UserTable extends AbstractTableModel implements TableGenerator {
 
@@ -41,7 +40,7 @@ public class UserTable extends AbstractTableModel implements TableGenerator {
     private List<UserData> connectToDatabase(Long userId) {
         String[] params = setParams("userId");
         String[] values = setValues(String.valueOf(userId));
-        List list = connectToDatabaseWithParams(ServiceConfig.SHOW_USER_INSTRUMENT, "user", params, values);
+        List list = connectToDatabaseWithParams(ServiceConfig.INSTRUMENT_SHOW_ALL, "user", params, values);
         List<UserData> userDataList = new ArrayList<>();
         for(Object o: list) {
             userDataList.add((UserData)o);
@@ -52,7 +51,7 @@ public class UserTable extends AbstractTableModel implements TableGenerator {
     private String getCurrentPrice(String indexList) {
         String[] params = setParams("name");
         String[] values = setValues(indexList);
-        String url = generateUrlWithParams(ServiceConfig.GET_SHARE, params, values);
+        String url = generateUrlWithParams(ServiceConfig.SHARES_GET_ONE, params, values);
         HttpURLConnection connection = createConnection(url, RequestMethod.GET);
         String[] array = getResponse(connection, "User");
         array = array[1].split(":");

@@ -6,13 +6,19 @@ import com.invest.Gui.listener.settings.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SettingsFrame extends JFrame {
 
     private JButton confirmButton;
     private JButton cancelButton;
-    private JRadioButton resetAccount;
-    private JRadioButton removeAccount;
+    private Set<JRadioButton> setButtons;
+    private JRadioButton resetAccountButton;
+    private JRadioButton removeAccountButton;
+    private JRadioButton changeLoginButton;
+    private JRadioButton changePasswordButton;
+    private JRadioButton changeEmailButton;
     private UserFrame userFrame;
     private UserDto userDto;
     private JPanel radioButtonsPanel;
@@ -25,16 +31,24 @@ public class SettingsFrame extends JFrame {
         createSettingFrame();
     }
 
-    public JButton getConfirmButton() {
-        return confirmButton;
+    public JRadioButton getChangeLoginButton() {
+        return changeLoginButton;
     }
 
-    public JRadioButton getResetAccount() {
-        return resetAccount;
+    public JRadioButton getChangePasswordButton() {
+        return changePasswordButton;
     }
 
-    public JRadioButton getRemoveAccount() {
-        return removeAccount;
+    public JRadioButton getChangeEmailButton() {
+        return changeEmailButton;
+    }
+
+    public JRadioButton getResetAccountButton() {
+        return resetAccountButton;
+    }
+
+    public JRadioButton getRemoveAccountButton() {
+        return removeAccountButton;
     }
 
     public UserFrame getUserFrame() {
@@ -47,22 +61,29 @@ public class SettingsFrame extends JFrame {
 
     private void createSettingFrame(){
         configureComponents();
+        createSetOfButtons();
         installListenersInComponents();
         configurePanels();
         configureFrame();
     }
 
     private void configureComponents() {
-        removeAccount = new JRadioButton();
-        resetAccount = new JRadioButton();
+        removeAccountButton = new JRadioButton();
+        resetAccountButton = new JRadioButton();
+        changeLoginButton = new JRadioButton();
+        changePasswordButton = new JRadioButton();
+        changeEmailButton = new JRadioButton();
         confirmButton = new JButton("confirm");
         confirmButton.setVisible(false);
         cancelButton = new JButton("cancel");
     }
 
     private void installListenersInComponents() {
-        removeAccount.addActionListener(new RemoveAccountActionListener(this));
-        resetAccount.addActionListener(new ResetAccountActionListener(this));
+        removeAccountButton.addActionListener(new SettingsFrameActionListener(this, removeAccountButton));
+        resetAccountButton.addActionListener(new SettingsFrameActionListener(this, resetAccountButton));
+        changeLoginButton.addActionListener(new SettingsFrameActionListener(this, changeLoginButton));
+        changePasswordButton.addActionListener(new SettingsFrameActionListener(this, changePasswordButton));
+        changeEmailButton.addActionListener(new SettingsFrameActionListener(this, changeEmailButton));
         confirmButton.addActionListener(new ConfirmDecisionActionListener(this));
         cancelButton.addActionListener(new ShowHideActionListener(this, ShowHideActionListener.INVISIBLE));
     }
@@ -70,8 +91,11 @@ public class SettingsFrame extends JFrame {
     private void configurePanels() {
         radioButtonsPanel = new JPanel();
         radioButtonsPanel.setLayout(new GridLayout(8,1));
-        radioButtonsPanel.add(removeAccount);
-        radioButtonsPanel.add(resetAccount);
+        radioButtonsPanel.add(removeAccountButton);
+        radioButtonsPanel.add(resetAccountButton);
+        radioButtonsPanel.add(changeLoginButton);
+        radioButtonsPanel.add(changePasswordButton);
+        radioButtonsPanel.add(changeEmailButton);
         buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridLayout(1, 2));
         buttonsPanel.add(confirmButton);
@@ -80,6 +104,9 @@ public class SettingsFrame extends JFrame {
         labelPanel.setLayout(new GridLayout(8, 1));
         labelPanel.add(new JLabel("Delete your account and your identities"));
         labelPanel.add(new JLabel("Reset your account (your instruments and statistics)"));
+        labelPanel.add(new JLabel("Login change"));
+        labelPanel.add(new JLabel("Password change"));
+        labelPanel.add(new JLabel("Email change"));
     }
 
     private void configureFrame() {
@@ -90,6 +117,28 @@ public class SettingsFrame extends JFrame {
         this.getContentPane().add(BorderLayout.CENTER, labelPanel);
         this.getContentPane().add(BorderLayout.WEST, radioButtonsPanel);
         this.getContentPane().add(BorderLayout.SOUTH, buttonsPanel);
+    }
+
+    private void createSetOfButtons() {
+        setButtons = new HashSet<>();
+        setButtons.add(removeAccountButton);
+        setButtons.add(resetAccountButton);
+        setButtons.add(changeLoginButton);
+        setButtons.add(changePasswordButton);
+        setButtons.add(changeEmailButton);
+    }
+
+    public void chooseButton(JRadioButton button) {
+        if (button.isSelected()) {
+            setButtons.remove(button);
+            for (JRadioButton radioButton: setButtons){
+                radioButton.setSelected(false);
+            }
+            confirmButton.setVisible(true);
+            setButtons.add(button);
+        } else {
+            confirmButton.setVisible(false);
+        }
     }
 
 }

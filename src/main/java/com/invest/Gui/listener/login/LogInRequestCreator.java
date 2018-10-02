@@ -4,7 +4,6 @@ import com.invest.Gui.config.ServiceConfig;
 import com.invest.Gui.connection.GetRequestCreator;
 import com.invest.Gui.connection.RequestMethod;
 import com.invest.Gui.dto.UserDto;
-import com.invest.Gui.frames.WarningFrame;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ class LogInRequestCreator implements GetRequestCreator {
     protected boolean sendReminderEmail(String email) {
         String[] params = {"mail"};
         String[] values = {email};
-        String urlPath = generateUrlWithParams(ServiceConfig.CHECK_MAIL, params, values);
+        String urlPath = generateUrlWithParams(ServiceConfig.USER_CHECK_MAIL, params, values);
         try {
             return getResponse(urlPath, RequestMethod.GET).equals("true");
         } catch (IOException e) {
