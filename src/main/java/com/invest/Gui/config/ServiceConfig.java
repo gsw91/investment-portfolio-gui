@@ -25,7 +25,7 @@ public final class ServiceConfig {
     public final static String USER_LOGIN = getPropertyValue(applicationProperties, "endpoint.user.login");
     public final static String USER_UPDATE_LOGIN = getPropertyValue(applicationProperties, "endpoint.user.update.login");
     public final static String USER_UPDATE_PASSWORD = getPropertyValue(applicationProperties, "endpoint.user.update.password");
-    public final static String USER_UPDATE_MAIL = getPropertyValue(applicationProperties, "endpoint.user.update.mail");
+    public final static String USER_UPDATE_MAIL = getPropertyValue(applicationProperties, "endpoint.user.update.email");
     public final static String STATS_USER = getPropertyValue(applicationProperties, "endpoint.stats.user");
     public final static String STATS_RESET = getPropertyValue(applicationProperties, "endpoint.stats.reset");
 
